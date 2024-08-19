@@ -49,7 +49,7 @@ async def _make_api_request(path, params={}, preview_time_period=False):
         return await response.json()
 
 
-async def get_frontend_state(project_id, environment):
+async def get_frontend_state(project_id, environment, preview_time_period=False):
     response = await _make_api_request(
         path=f"/organizations/sentry/events/",
         params={
@@ -66,6 +66,7 @@ async def get_frontend_state(project_id, environment):
                 "performance_score(measurements.score.inp)",
             ],
         },
+        preview_time_period=preview_time_period,
     )
 
     if len(response["data"]) == 0:
@@ -91,7 +92,7 @@ async def get_frontend_state(project_id, environment):
     return clean_data
 
 
-async def get_backend_state(project_id, environment):
+async def get_backend_state(project_id, environment, preview_time_period=False):
     response = await _make_api_request(
         path=f"/organizations/sentry/events/",
         params={
@@ -104,6 +105,7 @@ async def get_backend_state(project_id, environment):
                 "apdex()",
             ],
         },
+        preview_time_period=preview_time_period,
     )
 
     if len(response["data"]) == 0:
@@ -125,7 +127,7 @@ async def get_backend_state(project_id, environment):
     return clean_data
 
 
-async def get_requests_state(project_id, environment):
+async def get_requests_state(project_id, environment, preview_time_period=False):
     response = await _make_api_request(
         path=f"/organizations/sentry/events/",
         params={
@@ -140,6 +142,7 @@ async def get_requests_state(project_id, environment):
                 "avg(span.self_time)",
             ],
         },
+        preview_time_period=preview_time_period,
     )
 
     if len(response["data"]) == 0:
@@ -163,7 +166,7 @@ async def get_requests_state(project_id, environment):
     return clean_data
 
 
-async def get_cache_state(project_id, environment):
+async def get_cache_state(project_id, environment, preview_time_period=False):
     response = await _make_api_request(
         path=f"/organizations/sentry/events/",
         params={
@@ -183,6 +186,7 @@ async def get_cache_state(project_id, environment):
             ],
             "sort": "-time_spent_percentage()",
         },
+        preview_time_period=preview_time_period,
     )
 
     if len(response["data"]) == 0:
@@ -205,7 +209,7 @@ async def get_cache_state(project_id, environment):
     return clean_data
 
 
-async def get_queue_state(project_id, environment):
+async def get_queue_state(project_id, environment, preview_time_period=False):
     response = await _make_api_request(
         path=f"/organizations/sentry/events/",
         params={
@@ -222,6 +226,7 @@ async def get_queue_state(project_id, environment):
             ],
             "sort": "-time_spent_percentage(app,span.duration)",
         },
+        preview_time_period=preview_time_period,
     )
 
     if len(response["data"]) == 0:
@@ -245,7 +250,7 @@ async def get_queue_state(project_id, environment):
     return clean_data
 
 
-async def get_database_state(project_id, environment):
+async def get_database_state(project_id, environment, preview_time_period=False):
     response = await _make_api_request(
         path=f"/organizations/sentry/events/",
         params={
@@ -262,6 +267,7 @@ async def get_database_state(project_id, environment):
             ],
             "sort": "-time_spent_percentage()",
         },
+        preview_time_period=preview_time_period,
     )
 
     if len(response["data"]) == 0:
@@ -282,3 +288,79 @@ async def get_database_state(project_id, environment):
         )
 
     return clean_data
+
+
+async def get_data():
+    frontend_id = os.environ.get("SENTRY_FRONTEND_PROJECT_ID")
+    frontend_env = os.environ.get("SENTRY_FRONTEND_ENVIRONMENT")
+    backend_id = os.environ.get("SENTRY_BACKEND_PROJECT_ID")
+    backend_env = os.environ.get("SENTRY_BACKEND_ENVIRONMENT")
+
+    data = {}
+
+    data["frontend"] = await get_frontend_state(
+        project_id=frontend_id,
+        environment=frontend_env,
+    )
+    data["frontend_prev"] = await get_frontend_state(
+        project_id=frontend_id,
+        environment=frontend_env,
+        preview_time_period=True,
+    )
+
+    data["frontend_requests"] = await get_requests_state(
+        project_id=frontend_id,
+        environment=frontend_env,
+    )
+    data["frontend_requests_prev"] = await get_requests_state(
+        project_id=frontend_id,
+        environment=frontend_env,
+        preview_time_period=True,
+    )
+
+    data["backend"] = await get_backend_state(
+        project_id=backend_id,
+        environment=backend_env,
+    )
+    data["backend_prev"] = await get_backend_state(
+        project_id=backend_id,
+        environment=backend_env,
+        preview_time_period=True,
+    )
+
+    data["backend_requests"] = await get_requests_state(
+        project_id=backend_id,
+        environment=backend_env,
+    )
+    data["backend_requests_prev"] = await get_requests_state(
+        project_id=backend_id,
+        environment=backend_env,
+        preview_time_period=True,
+    )
+
+    data["cache"] = await get_cache_state(
+        project_id=backend_id,
+        environment=backend_env,
+    )
+    data["cache_prev"] = await get_cache_state(
+        project_id=backend_id,
+        environment=backend_env,
+        preview_time_period=True,
+    )
+
+    data["queue"] = await get_queue_state(
+        project_id=backend_id,
+        environment=backend_env,
+    )
+    data["queue_prev"] = await get_queue_state(
+        project_id=backend_id,
+        environment=backend_env,
+        preview_time_period=True,
+    )
+
+    data["database"] = await get_database_state(
+        project_id=backend_id,
+        environment=backend_env,
+    )
+
+    return data

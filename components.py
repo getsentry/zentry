@@ -1,7 +1,7 @@
 from fasthtml.common import *
 
 
-async def frontend_state(data=None):
+async def frontend_state(data=None, data_prev=None):
     if not data:
         return Div(
             H2("Frontend"),
@@ -21,7 +21,7 @@ async def frontend_state(data=None):
     )
 
 
-async def backend_state(data=None):
+async def backend_state(data=None, data_prev=None):
     if not data:
         return Div(
             H2("Backend"),
@@ -31,13 +31,13 @@ async def backend_state(data=None):
 
     return Div(
         H2("Backend"),
-        P("Failure Rate: ", data["failure_rate"]),
-        P("Apdex: ", data["apdex"]),
+        P("Failure Rate: ", data["failure_rate"], data_prev["failure_rate"]),
+        P("Apdex: ", data["apdex"], data_prev["apdex"]),
         id="backend",
     )
 
 
-async def requests_state(title, id, data=None):
+async def requests_state(title, id, data=None, data_prev=None):
     if not data:
         return Div(
             H2(title),
@@ -58,19 +58,19 @@ async def requests_state(title, id, data=None):
     )
 
 
-async def frontend_requests_state(data=None):
+async def frontend_requests_state(data=None, data_prev=None):
     return requests_state(
         "Frontend Outbound Requests", "frontend-outbound-requests", data
     )
 
 
-async def backend_requests_state(data=None):
+async def backend_requests_state(data=None, data_prev=None):
     return requests_state(
         "Backend Outbound Requests", "backend-outbound-requests", data
     )
 
 
-async def cache_state(data=None):
+async def cache_state(data=None, data_prev=None):
     if not data:
         return Div(
             H2("Cache"),
@@ -85,7 +85,7 @@ async def cache_state(data=None):
     )
 
 
-async def queue_state(data=None):
+async def queue_state(data=None, data_prev=None):
     if not data:
         return Div(
             H2("Queues"),
@@ -102,7 +102,7 @@ async def queue_state(data=None):
     )
 
 
-async def database_state(data=None):
+async def database_state(data=None, data_prev=None):
     output = []
     for item in data:
         output.append(
