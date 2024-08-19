@@ -1,3 +1,4 @@
+import datetime
 import os
 
 import requests
@@ -9,17 +10,33 @@ SENTRY_API_AUTH_TOKEN = os.environ.get("SENTRY_API_AUTH_TOKEN")
 if not SENTRY_API_AUTH_TOKEN:
     raise ValueError("Please set the SENTRY_API_AUTH_TOKEN environment variable")
 
-STATS_PERIOD = os.environ.get("STATS_PERIOD", "1h")
 REFERRER = os.environ.get("REFERRER", "zentry")
+TIME_PERIOD_IN_DAYS = 1
 
 
-def _make_api_request(path, params={}):
+def _get_time_period(preview_time_period):
+    now = datetime.datetime.now(datetime.timezone.utc)
+
+    if preview_time_period:
+        start = now - datetime.timedelta(days=2 * TIME_PERIOD_IN_DAYS)
+        end = now - datetime.timedelta(days=TIME_PERIOD_IN_DAYS)
+    else:
+        start = now - datetime.timedelta(days=TIME_PERIOD_IN_DAYS)
+        end = now
+
+    return (start, end)
+
+
+def _make_api_request(path, params={}, preview_time_period=False):
     url = SENTRY_API_BASE_URL + path
     headers = {"Authorization": f"Bearer {SENTRY_API_AUTH_TOKEN}"}
 
+    start, end = _get_time_period(preview_time_period)
+
     base_params = {
-        "statsPeriod": STATS_PERIOD,
         "referrer": REFERRER,
+        "start": start,
+        "end": end,
     }
     combined_params = {}
     combined_params.update(base_params)
