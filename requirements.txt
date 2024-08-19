@@ -1,6 +1,7 @@
 python-fasthtml
 
 requests
+# aiohttp[speedups]
 
 sentry-sdk
 

@@ -1,7 +1,7 @@
 from fasthtml.common import *
 
 
-def frontend_state(data=None):
+async def frontend_state(data=None):
     if not data:
         return Div(
             H2("Frontend"),
@@ -21,7 +21,7 @@ def frontend_state(data=None):
     )
 
 
-def backend_state(data=None):
+async def backend_state(data=None):
     if not data:
         return Div(
             H2("Backend"),
@@ -37,7 +37,7 @@ def backend_state(data=None):
     )
 
 
-def requests_state(title, id, data=None):
+async def requests_state(title, id, data=None):
     if not data:
         return Div(
             H2(title),
@@ -58,19 +58,19 @@ def requests_state(title, id, data=None):
     )
 
 
-def frontend_requests_state(data=None):
+async def frontend_requests_state(data=None):
     return requests_state(
         "Frontend Outbound Requests", "frontend-outbound-requests", data
     )
 
 
-def backend_requests_state(data=None):
+async def backend_requests_state(data=None):
     return requests_state(
         "Backend Outbound Requests", "backend-outbound-requests", data
     )
 
 
-def cache_state(data=None):
+async def cache_state(data=None):
     if not data:
         return Div(
             H2("Cache"),
@@ -85,7 +85,7 @@ def cache_state(data=None):
     )
 
 
-def queue_state(data=None):
+async def queue_state(data=None):
     if not data:
         return Div(
             H2("Queues"),
@@ -102,7 +102,7 @@ def queue_state(data=None):
     )
 
 
-def database_state(data=None):
+async def database_state(data=None):
     output = []
     for item in data:
         output.append(

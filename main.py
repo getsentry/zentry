@@ -18,13 +18,13 @@ from components import (
 sentry_sdk.init(
     dsn=os.environ.get("SENTRY_DSN"),
     traces_sample_rate=1.0,
-    debug=True,
+    # debug=True,
 )
 
 app, rt = fast_app()
 
 
-def header(title):
+async def header(title):
     return Div(
         Li(A("Issues", href="/"), A("State of the System", href="/state")),
         Titled(title),
@@ -33,7 +33,7 @@ def header(title):
 
 
 @app.get("/state")
-def state():
+async def state():
     frontend_data = sentry_api.get_frontend_state(
         project_id=os.environ.get("SENTRY_FRONTEND_PROJECT_ID"),
         environment=os.environ.get("SENTRY_FRONTEND_ENVIRONMENT"),
@@ -70,20 +70,20 @@ def state():
     )
 
     return Title("Zentry"), Div(
-        header("State of the System"),
-        frontend_state(frontend_data),
-        frontend_requests_state(frontent_requests_data),
-        backend_state(backend_data),
-        backend_requests_state(backend_requests_data),
-        cache_state(cache_data),
-        queue_state(queue_data),
-        database_state(database_data),
+        await header("State of the System"),
+        await frontend_state(frontend_data),
+        await frontend_requests_state(frontent_requests_data),
+        await backend_state(backend_data),
+        await backend_requests_state(backend_requests_data),
+        await cache_state(cache_data),
+        await queue_state(queue_data),
+        await database_state(database_data),
         id="main",
     )
 
 
 @app.get("/")
-def home():
+async def home():
     return Title("Zentry"), Div(
         header("Issues"),
         id="main",
