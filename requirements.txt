@@ -4,4 +4,5 @@ requests
 
 sentry-sdk
 
+ruff
 ipdb

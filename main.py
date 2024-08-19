@@ -2,6 +2,7 @@ import os
 
 from fasthtml.common import *
 
+import sentry_api
 import sentry_sdk
 
 
@@ -11,30 +12,36 @@ sentry_sdk.init(
     debug=True,
 )
 
-app,rt = fast_app()
+app, rt = fast_app()
 
 
 def header(title):
     return Div(
-        Li(A("Issues", href="/"), A("State of the System", href="/state")), 
+        Li(A("Issues", href="/"), A("State of the System", href="/state")),
         Titled(title),
         id="header",
     )
 
 
-@app.get('/state')
-def state(): 
+@app.get("/state")
+def state():
+    frontend_state = sentry_api.get_frontend_state(
+        project_id=os.environ.get("SENTRY_PROJECT_ID"),
+        environment=os.environ.get("SENTRY_ENVIRONMENT"),
+    )
+
     return Title("Zentry"), Div(
         header("State of the System"),
         id="main",
     )
 
 
-@app.get('/')
-def home(): 
+@app.get("/")
+def home():
     return Title("Zentry"), Div(
         header("Issues"),
         id="main",
     )
+
 
 serve()
