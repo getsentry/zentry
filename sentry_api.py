@@ -110,6 +110,44 @@ def get_backend_state(project_id, environment):
     return clean_data
 
 
+def get_requests_state(project_id, environment):
+    response = _make_api_request(
+        path=f"/organizations/sentry/events/",
+        params={
+            "project": project_id,
+            "environment": environment,
+            "dataset": "spansMetrics",
+            "query": "span.module:http span.op:http.client",
+            "field": [
+                "http_response_rate(3)",
+                "http_response_rate(4)",
+                "http_response_rate(5)",
+                "avg(span.self_time)",
+            ],
+        },
+    )
+
+    if len(response["data"]) == 0:
+        return None
+
+    # Rename returned keys for better readability
+    rename_keys = {
+        "http_response_rate(3)": "response_rate_3xx",
+        "http_response_rate(4)": "response_rate_4xx",
+        "http_response_rate(5)": "response_rate_5xx",
+        "avg(span.self_time)": "time_avg",
+    }
+
+    data = response["data"][0]
+    clean_data = {}
+
+    for key in data.keys():
+        if key in rename_keys:
+            clean_data[rename_keys[key]] = data[key]
+
+    return clean_data
+
+
 def get_cache_state(project_id, environment):
     response = _make_api_request(
         path=f"/organizations/sentry/events/",
