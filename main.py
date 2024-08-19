@@ -5,6 +5,7 @@ from fasthtml.common import *
 import sentry_api
 import sentry_sdk
 
+from components import backend_state, cache_state, database_state, frontend_state, queue_state
 
 sentry_sdk.init(
     dsn=os.environ.get("SENTRY_DSN"),
@@ -20,84 +21,6 @@ def header(title):
         Li(A("Issues", href="/"), A("State of the System", href="/state")),
         Titled(title),
         id="header",
-    )
-
-
-def frontend_state(data=None):
-    if not data:
-        return Div(
-            H2("Frontend"),
-            P("No data available"),
-        )
-
-    return Div(
-        H2("Frontend"),
-        P("Web Server Responsiveness (Time to first byte): ", data["ttfb"]),
-        P(
-            "Time the first content takes to render (First Contentful Paint): ",
-            data["fcp"],
-        ),
-        P("Responsiveness (Interaction to Next Paint): ", data["inp"]),
-    )
-
-
-def backend_state(data=None):
-    if not data:
-        return Div(
-            H2("Backend"),
-            P("No data available"),
-        )
-
-    return Div(
-        H2("Backend"),
-        P("Failure Rate: ", data["failure_rate"]),
-        P("Apdex: ", data["apdex"]),
-    )
-
-
-def cache_state(data=None):
-    if not data:
-        return Div(
-            H2("Cache"),
-            P("No data available"),
-        )
-
-    return Div(
-        H2("Cache"),
-        P("Cache hit rate: ", 1 - data["miss_rate"]),
-    )
-
-
-def queue_state(data=None):
-    if not data:
-        return Div(
-            H2("Queues"),
-            P("No data available"),
-        )
-
-    return Div(
-        H2("Queues"),
-        P("Average processing time: ", data["processing_time_avg"]),
-        P("Average time in queue: ", data["time_in_queue_avg"]),
-        P("Failure Rate: ", 1 - data["success_rate"]),
-    )
-
-
-def database_state(data=None):
-    output = []
-    for item in data:
-        output.append(
-            Div(
-                P("Query:", item["query"]),
-                P("Time avg:", item["time_avg"]),
-                P("Time total::", item["time_total"]),
-                P("Time percentage:", item["time_percentage"]),
-            )
-        )
-
-    return Div(
-        H2("Database"),
-        *output,
     )
 
 
