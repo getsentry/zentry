@@ -48,14 +48,18 @@ async def state():
     )
     async with CachedSession(cache=backend) as client:
         sentry_api.client = client
-
         data = await sentry_api.get_data()
+
         return Title("Zentry"), Div(
             await header("State of the System"),
             await frontend_state(data["frontend"], data["frontend_prev"]),
-            await frontend_requests_state(data["frontend_requests"], data["frontend_requests_prev"]),
+            await frontend_requests_state(
+                data["frontend_requests"], data["frontend_requests_prev"]
+            ),
             await backend_state(data["backend"], data["backend_prev"]),
-            await backend_requests_state(data["backend_requests"], data["backend_requests_prev"]),
+            await backend_requests_state(
+                data["backend_requests"], data["backend_requests_prev"]
+            ),
             await cache_state(data["cache"], data["cache_prev"]),
             await queue_state(data["queue"], data["queue_prev"]),
             await database_state(data["database"]),

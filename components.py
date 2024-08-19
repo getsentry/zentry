@@ -1,5 +1,23 @@
 from fasthtml.common import *
 
+from utils import fmt_duration, fmt_percentage, fmt_percentage_signed
+
+
+def metric(title, id, value, value_prev, score, formatter=lambda x: x):
+    """
+    The card representing one metric.
+    """
+    change = (value_prev - value) / value_prev
+
+    return Div(
+        Div(title, cls="title"),
+        Div(formatter(value), cls="value"),
+        Div(fmt_percentage_signed(change), cls="change"),
+        Div(score, cls="score"),
+        id=id,
+        cls="metric",
+    )
+
 
 async def frontend_state(data=None, data_prev=None):
     if not data:
@@ -11,12 +29,29 @@ async def frontend_state(data=None, data_prev=None):
 
     return Div(
         H2("Frontend"),
-        P("Web Server Responsiveness (Time to first byte): ", data["ttfb"]),
-        P(
-            "Time the first content takes to render (First Contentful Paint): ",
-            data["fcp"],
+        metric(
+            title="Web Server Responsiveness (Time to first byte)",
+            id="ttfb",
+            value=data["ttfb"],
+            value_prev=data_prev["ttfb"],
+            score="TODO",
+            formatter=fmt_duration,
         ),
-        P("Responsiveness (Interaction to Next Paint): ", data["inp"]),
+        metric(
+            title="Time the first content takes to render (First Contentful Paint)",
+            id="fcp",
+            value=data["fcp"],
+            value_prev=data_prev["fcp"],
+            score="TODO",
+            formatter=fmt_duration,
+        ),
+        metric(
+            title="Responsiveness (Interaction to Next Paint)",
+            id="inp",
+            value=data["inp"],
+            value_prev=data_prev["inp"],
+            score="TODO",
+        ),
         id="frontend",
     )
 
@@ -31,8 +66,21 @@ async def backend_state(data=None, data_prev=None):
 
     return Div(
         H2("Backend"),
-        P("Failure Rate: ", data["failure_rate"], data_prev["failure_rate"]),
-        P("Apdex: ", data["apdex"], data_prev["apdex"]),
+        metric(
+            title="Failure Rate",
+            id="failure-rate",
+            value=data["failure_rate"],
+            value_prev=data_prev["failure_rate"],
+            score="TODO",
+            formatter=fmt_percentage,
+        ),
+        metric(
+            title="Apdex",
+            id="apdex",
+            value=data["apdex"],
+            value_prev=data_prev["apdex"],
+            score="TODO",
+        ),
         id="backend",
     )
 
@@ -45,28 +93,55 @@ async def requests_state(title, id, data=None, data_prev=None):
             id=id,
         )
 
+    failure_rate = (
+        data["response_rate_3xx"]
+        + data["response_rate_4xx"]
+        + data["response_rate_5xx"]
+    )
+
+    failure_rate_prev = (
+        data_prev["response_rate_3xx"]
+        + data_prev["response_rate_4xx"]
+        + data_prev["response_rate_5xx"]
+    )
+
     return Div(
         H2(title),
-        P("Average Duration: ", data["time_avg"]),
-        P(
-            "Failure Rate: ",
-            data["response_rate_3xx"]
-            + data["response_rate_4xx"]
-            + data["response_rate_5xx"],
+        metric(
+            title="Average Duration",
+            id="time_avg",
+            value=data["time_avg"],
+            value_prev=data_prev["time_avg"],
+            score="TODO",
+            formatter=fmt_duration,
+        ),
+        metric(
+            title="Failure Rate",
+            id="time_avg",
+            value=failure_rate,
+            value_prev=failure_rate_prev,
+            score="TODO",
+            formatter=fmt_percentage,
         ),
         id=id,
     )
 
 
 async def frontend_requests_state(data=None, data_prev=None):
-    return requests_state(
-        "Frontend Outbound Requests", "frontend-outbound-requests", data
+    return await requests_state(
+        "Frontend Outbound Requests",
+        "frontend-outbound-requests",
+        data,
+        data_prev,
     )
 
 
 async def backend_requests_state(data=None, data_prev=None):
-    return requests_state(
-        "Backend Outbound Requests", "backend-outbound-requests", data
+    return await requests_state(
+        "Backend Outbound Requests",
+        "backend-outbound-requests",
+        data,
+        data_prev,
     )
 
 
@@ -80,7 +155,14 @@ async def cache_state(data=None, data_prev=None):
 
     return Div(
         H2("Cache"),
-        P("Cache hit rate: ", 1 - data["miss_rate"]),
+        metric(
+            title="Cache hit rate",
+            id="cahe_hit_rate",
+            value=1 - data["miss_rate"],
+            value_prev=1 - data_prev["miss_rate"],
+            score="TODO",
+            formatter=fmt_percentage,
+        ),
         id="cache",
     )
 
@@ -95,9 +177,30 @@ async def queue_state(data=None, data_prev=None):
 
     return Div(
         H2("Queues"),
-        P("Average processing time: ", data["processing_time_avg"]),
-        P("Average time in queue: ", data["time_in_queue_avg"]),
-        P("Failure Rate: ", 1 - data["success_rate"]),
+        metric(
+            title="Average processing time",
+            id="processing_time_avg",
+            value=data["processing_time_avg"],
+            value_prev=data_prev["processing_time_avg"],
+            score="TODO",
+            formatter=fmt_duration,
+        ),
+        metric(
+            title="Average time in queue",
+            id="time_in_queue_avg",
+            value=data["time_in_queue_avg"],
+            value_prev=data_prev["time_in_queue_avg"],
+            score="TODO",
+            formatter=fmt_duration,
+        ),
+        metric(
+            title="Failure Rate",
+            id="queue_failure_rate",
+            value=1 - data["success_rate"],
+            value_prev=1 - data_prev["success_rate"],
+            score="TODO",
+            formatter=fmt_percentage,
+        ),
         id="queue",
     )
 
