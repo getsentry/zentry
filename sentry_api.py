@@ -120,11 +120,11 @@ def get_cache_state(project_id, environment):
             "per_page": 5,
             "query": "span.op:[cache.get_item,cache.get]",
             "field": [
-                "project", 
+                "project",
                 "project.id",
-                "transaction", 
+                "transaction",
                 "cache_miss_rate()",
-                "sum(span.self_time)", 
+                "sum(span.self_time)",
                 "avg(cache.item_size)",
                 "time_spent_percentage()",
             ],
@@ -137,13 +137,12 @@ def get_cache_state(project_id, environment):
 
     # Rename returned keys for better readability
     rename_keys = {
-        "avg_if(span.duration,span.op,queue.process)": "processing_time_avg",
-        "avg(messaging.message.receive.latency)": "time_in_queue_avg",
-        "trace_status_rate(ok)": "success_rate",
-        "time_spent_percentage(app,span.duration)": "time_percentage",
+        "cache_miss_rate()": "miss_rate",
+        "sum(span.self_time)": "time_total",
+        "avg(cache.item_size)": "time_avg",
     }
 
-    data = response["data"][0]  
+    data = response["data"][0]
     clean_data = {}
 
     for key in data.keys():
@@ -163,7 +162,7 @@ def get_queue_state(project_id, environment):
             "per_page": 5,
             "query": "span.op:[queue.process,queue.publish]",
             "field": [
-                "avg_if(span.duration,span.op,queue.process)", 
+                "avg_if(span.duration,span.op,queue.process)",
                 "avg(messaging.message.receive.latency)",
                 "trace_status_rate(ok)",
                 "time_spent_percentage(app,span.duration)",
@@ -220,11 +219,13 @@ def get_database_state(project_id, environment):
     clean_data = []
 
     for item in data:
-        clean_data.append({
-            "query": item["span.description"],
-            "time_avg": item["avg(span.self_time)"],
-            "time_total": item["sum(span.self_time)"],
-            "time_percentage": item["time_spent_percentage()"],
-        })
+        clean_data.append(
+            {
+                "query": item["span.description"],
+                "time_avg": item["avg(span.self_time)"],
+                "time_total": item["sum(span.self_time)"],
+                "time_percentage": item["time_spent_percentage()"],
+            }
+        )
 
     return clean_data

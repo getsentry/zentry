@@ -24,6 +24,12 @@ def header(title):
 
 
 def frontend_state(data=None):
+    if not data:
+        return Div(
+            H2("Frontend"),
+            P("No data available"),
+        )
+
     return Div(
         H2("Frontend"),
         P("Web Server Responsiveness (Time to first byte): ", data["ttfb"]),
@@ -36,6 +42,12 @@ def frontend_state(data=None):
 
 
 def backend_state(data=None):
+    if not data:
+        return Div(
+            H2("Backend"),
+            P("No data available"),
+        )
+
     return Div(
         H2("Backend"),
         P("Failure Rate: ", data["failure_rate"]),
@@ -44,18 +56,30 @@ def backend_state(data=None):
 
 
 def cache_state(data=None):
+    if not data:
+        return Div(
+            H2("Cache"),
+            P("No data available"),
+        )
+
     return Div(
         H2("Cache"),
-        P("not available"),
+        P("Cache hit rate: ", 1 - data["miss_rate"]),
     )
 
 
 def queue_state(data=None):
+    if not data:
+        return Div(
+            H2("Queues"),
+            P("No data available"),
+        )
+
     return Div(
         H2("Queues"),
         P("Average processing time: ", data["processing_time_avg"]),
         P("Average time in queue: ", data["time_in_queue_avg"]),
-        P("Failure Rate: ", 1-data["success_rate"]),
+        P("Failure Rate: ", 1 - data["success_rate"]),
     )
 
 
