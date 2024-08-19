@@ -1,7 +1,7 @@
 import datetime
 import os
 
-import requests
+import aiohttp
 
 
 SENTRY_API_BASE_URL = os.environ.get("SENTRY_API_BASE_URL", "https://sentry.io/api/0")
@@ -12,6 +12,8 @@ if not SENTRY_API_AUTH_TOKEN:
 
 REFERRER = os.environ.get("REFERRER", "zentry")
 TIME_PERIOD_IN_DAYS = 1
+
+client = None
 
 
 def _get_time_period(preview_time_period):
@@ -27,7 +29,11 @@ def _get_time_period(preview_time_period):
     return (start, end)
 
 
-def _make_api_request(path, params={}, preview_time_period=False):
+async def _make_api_request(path, params={}, preview_time_period=False):
+    global client
+    if client is None:
+        client = aiohttp.ClientSession()
+
     url = SENTRY_API_BASE_URL + path
     headers = {"Authorization": f"Bearer {SENTRY_API_AUTH_TOKEN}"}
 
@@ -35,24 +41,19 @@ def _make_api_request(path, params={}, preview_time_period=False):
 
     base_params = {
         "referrer": REFERRER,
-        "start": start,
-        "end": end,
+        "start": start.isoformat(),
+        "end": end.isoformat(),
     }
     combined_params = {}
     combined_params.update(base_params)
     combined_params.update(params)
 
-    response = requests.get(
-        url,
-        headers=headers,
-        params=combined_params,
-    )
-
-    return response.json()
+    async with client.get(url, headers=headers, params=combined_params) as response:
+        return await response.json()
 
 
-def get_frontend_state(project_id, environment):
-    response = _make_api_request(
+async def get_frontend_state(project_id, environment):
+    response = await _make_api_request(
         path=f"/organizations/sentry/events/",
         params={
             "project": project_id,
@@ -93,8 +94,8 @@ def get_frontend_state(project_id, environment):
     return clean_data
 
 
-def get_backend_state(project_id, environment):
-    response = _make_api_request(
+async def get_backend_state(project_id, environment):
+    response = await _make_api_request(
         path=f"/organizations/sentry/events/",
         params={
             "project": project_id,
@@ -127,8 +128,8 @@ def get_backend_state(project_id, environment):
     return clean_data
 
 
-def get_requests_state(project_id, environment):
-    response = _make_api_request(
+async def get_requests_state(project_id, environment):
+    response = await _make_api_request(
         path=f"/organizations/sentry/events/",
         params={
             "project": project_id,
@@ -165,8 +166,8 @@ def get_requests_state(project_id, environment):
     return clean_data
 
 
-def get_cache_state(project_id, environment):
-    response = _make_api_request(
+async def get_cache_state(project_id, environment):
+    response = await _make_api_request(
         path=f"/organizations/sentry/events/",
         params={
             "project": project_id,
@@ -207,8 +208,8 @@ def get_cache_state(project_id, environment):
     return clean_data
 
 
-def get_queue_state(project_id, environment):
-    response = _make_api_request(
+async def get_queue_state(project_id, environment):
+    response = await _make_api_request(
         path=f"/organizations/sentry/events/",
         params={
             "project": project_id,
@@ -247,8 +248,8 @@ def get_queue_state(project_id, environment):
     return clean_data
 
 
-def get_database_state(project_id, environment):
-    response = _make_api_request(
+async def get_database_state(project_id, environment):
+    response = await _make_api_request(
         path=f"/organizations/sentry/events/",
         params={
             "project": project_id,
