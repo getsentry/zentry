@@ -58,9 +58,20 @@ def queue_state(data=None):
 
 
 def database_state(data=None):
+    output = []
+    for item in data:
+        output.append(
+            Div(
+                P("Query:", item["query"]),
+                P("Time avg:", item["time_avg"]),
+                P("Time total::", item["time_total"]),
+                P("Time percentage:", item["time_percentage"]),
+            )
+        )
+
     return Div(
         H2("Database"),
-        P("not available"),
+        *output,
     )
 
 
@@ -76,13 +87,18 @@ def state():
         environment=os.environ.get("SENTRY_BACKEND_ENVIRONMENT"),
     )
 
+    database_data = sentry_api.get_database_state(
+        project_id=os.environ.get("SENTRY_BACKEND_PROJECT_ID"),
+        environment=os.environ.get("SENTRY_BACKEND_ENVIRONMENT"),
+    )
+
     return Title("Zentry"), Div(
         header("State of the System"),
         frontend_state(frontend_data),
         backend_state(backend_data),
         cache_state(),
         queue_state(),
-        database_state(),
+        database_state(database_data),
         id="main",
     )
 

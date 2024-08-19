@@ -100,3 +100,37 @@ def get_backend_state(project_id, environment):
             clean_data[rename_keys[key]] = data[key]
 
     return clean_data
+
+
+def get_database_state(project_id, environment):
+    response = _make_api_request(
+        path=f"/organizations/sentry/events/",
+        params={
+            "project": project_id,
+            "environment": environment,
+            "dataset": "spansMetrics",
+            "per_page": 5,
+            "query": "span.module:db has:span.description",
+            "field": [
+                "span.description",
+                "avg(span.self_time)",
+                "sum(span.self_time)",
+                "time_spent_percentage()",
+            ],
+            "sort": "-time_spent_percentage()",
+        },
+    )
+
+    # Rename returned keys for better readability
+    data = response["data"]
+    clean_data = []
+
+    for item in data:
+        clean_data.append({
+            "query": item["span.description"],
+            "time_avg": item["avg(span.self_time)"],
+            "time_total": item["sum(span.self_time)"],
+            "time_percentage": item["time_spent_percentage()"],
+        })
+
+    return clean_data
