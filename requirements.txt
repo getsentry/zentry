@@ -1,0 +1,7 @@
+python-fasthtml
+
+requests
+
+sentry-sdk
+
+ipdb
