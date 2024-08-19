@@ -89,6 +89,11 @@ def state():
         environment=os.environ.get("SENTRY_BACKEND_ENVIRONMENT"),
     )
 
+    cache_data = sentry_api.get_cache_state(
+        project_id=os.environ.get("SENTRY_BACKEND_PROJECT_ID"),
+        environment=os.environ.get("SENTRY_BACKEND_ENVIRONMENT"),
+    )
+
     queue_data = sentry_api.get_queue_state(
         project_id=os.environ.get("SENTRY_BACKEND_PROJECT_ID"),
         environment=os.environ.get("SENTRY_BACKEND_ENVIRONMENT"),
@@ -103,7 +108,7 @@ def state():
         header("State of the System"),
         frontend_state(frontend_data),
         backend_state(backend_data),
-        cache_state(),
+        cache_state(cache_data),
         queue_state(queue_data),
         database_state(database_data),
         id="main",

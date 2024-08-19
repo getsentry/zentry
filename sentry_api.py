@@ -53,6 +53,9 @@ def get_frontend_state(project_id, environment):
         },
     )
 
+    if len(response["data"]) == 0:
+        return None
+
     # Rename returned keys for better readability
     rename_keys = {
         "p75(measurements.ttfb)": "ttfb",
@@ -65,6 +68,7 @@ def get_frontend_state(project_id, environment):
 
     data = response["data"][0]
     clean_data = {}
+
     for key in data.keys():
         if key in rename_keys:
             clean_data[rename_keys[key]] = data[key]
@@ -87,6 +91,9 @@ def get_backend_state(project_id, environment):
         },
     )
 
+    if len(response["data"]) == 0:
+        return None
+
     # Rename returned keys for better readability
     rename_keys = {
         "failure_rate()": "failure_rate",
@@ -95,6 +102,50 @@ def get_backend_state(project_id, environment):
 
     data = response["data"][0]
     clean_data = {}
+
+    for key in data.keys():
+        if key in rename_keys:
+            clean_data[rename_keys[key]] = data[key]
+
+    return clean_data
+
+
+def get_cache_state(project_id, environment):
+    response = _make_api_request(
+        path=f"/organizations/sentry/events/",
+        params={
+            "project": project_id,
+            "environment": environment,
+            "dataset": "spansMetrics",
+            "per_page": 5,
+            "query": "span.op:[cache.get_item,cache.get]",
+            "field": [
+                "project", 
+                "project.id",
+                "transaction", 
+                "cache_miss_rate()",
+                "sum(span.self_time)", 
+                "avg(cache.item_size)",
+                "time_spent_percentage()",
+            ],
+            "sort": "-time_spent_percentage()",
+        },
+    )
+
+    if len(response["data"]) == 0:
+        return None
+
+    # Rename returned keys for better readability
+    rename_keys = {
+        "avg_if(span.duration,span.op,queue.process)": "processing_time_avg",
+        "avg(messaging.message.receive.latency)": "time_in_queue_avg",
+        "trace_status_rate(ok)": "success_rate",
+        "time_spent_percentage(app,span.duration)": "time_percentage",
+    }
+
+    data = response["data"][0]  
+    clean_data = {}
+
     for key in data.keys():
         if key in rename_keys:
             clean_data[rename_keys[key]] = data[key]
@@ -121,6 +172,9 @@ def get_queue_state(project_id, environment):
         },
     )
 
+    if len(response["data"]) == 0:
+        return None
+
     # Rename returned keys for better readability
     rename_keys = {
         "avg_if(span.duration,span.op,queue.process)": "processing_time_avg",
@@ -131,6 +185,7 @@ def get_queue_state(project_id, environment):
 
     data = response["data"][0]
     clean_data = {}
+
     for key in data.keys():
         if key in rename_keys:
             clean_data[rename_keys[key]] = data[key]
@@ -156,6 +211,9 @@ def get_database_state(project_id, environment):
             "sort": "-time_spent_percentage()",
         },
     )
+
+    if len(response["data"]) == 0:
+        return None
 
     # Rename returned keys for better readability
     data = response["data"]
