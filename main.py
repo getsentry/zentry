@@ -53,7 +53,9 @@ def cache_state(data=None):
 def queue_state(data=None):
     return Div(
         H2("Queues"),
-        P("not available"),
+        P("Average processing time: ", data["processing_time_avg"]),
+        P("Average time in queue: ", data["time_in_queue_avg"]),
+        P("Failure Rate: ", 1-data["success_rate"]),
     )
 
 
@@ -87,6 +89,11 @@ def state():
         environment=os.environ.get("SENTRY_BACKEND_ENVIRONMENT"),
     )
 
+    queue_data = sentry_api.get_queue_state(
+        project_id=os.environ.get("SENTRY_BACKEND_PROJECT_ID"),
+        environment=os.environ.get("SENTRY_BACKEND_ENVIRONMENT"),
+    )
+
     database_data = sentry_api.get_database_state(
         project_id=os.environ.get("SENTRY_BACKEND_PROJECT_ID"),
         environment=os.environ.get("SENTRY_BACKEND_ENVIRONMENT"),
@@ -97,7 +104,7 @@ def state():
         frontend_state(frontend_data),
         backend_state(backend_data),
         cache_state(),
-        queue_state(),
+        queue_state(queue_data),
         database_state(database_data),
         id="main",
     )

@@ -102,6 +102,42 @@ def get_backend_state(project_id, environment):
     return clean_data
 
 
+def get_queue_state(project_id, environment):
+    response = _make_api_request(
+        path=f"/organizations/sentry/events/",
+        params={
+            "project": project_id,
+            "environment": environment,
+            "dataset": "spansMetrics",
+            "per_page": 5,
+            "query": "span.op:[queue.process,queue.publish]",
+            "field": [
+                "avg_if(span.duration,span.op,queue.process)", 
+                "avg(messaging.message.receive.latency)",
+                "trace_status_rate(ok)",
+                "time_spent_percentage(app,span.duration)",
+            ],
+            "sort": "-time_spent_percentage(app,span.duration)",
+        },
+    )
+
+    # Rename returned keys for better readability
+    rename_keys = {
+        "avg_if(span.duration,span.op,queue.process)": "processing_time_avg",
+        "avg(messaging.message.receive.latency)": "time_in_queue_avg",
+        "trace_status_rate(ok)": "success_rate",
+        "time_spent_percentage(app,span.duration)": "time_percentage",
+    }
+
+    data = response["data"][0]
+    clean_data = {}
+    for key in data.keys():
+        if key in rename_keys:
+            clean_data[rename_keys[key]] = data[key]
+
+    return clean_data
+
+
 def get_database_state(project_id, environment):
     response = _make_api_request(
         path=f"/organizations/sentry/events/",
