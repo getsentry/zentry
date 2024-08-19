@@ -23,15 +23,66 @@ def header(title):
     )
 
 
+def frontend_state(data=None):
+    return Div(
+        H2("Frontend"),
+        P("Web Server Responsiveness (Time to first byte): ", data["ttfb"]),
+        P(
+            "Time the first content takes to render (First Contentful Paint): ",
+            data["fcp"],
+        ),
+        P("Responsiveness (Interaction to Next Paint): ", data["inp"]),
+    )
+
+
+def backend_state(data=None):
+    return Div(
+        H2("Backend"),
+        P("Failure Rate: ", data["failure_rate"]),
+        P("Apdex: ", data["apdex"]),
+    )
+
+
+def cache_state(data=None):
+    return Div(
+        H2("Cache"),
+        P("not available"),
+    )
+
+
+def queue_state(data=None):
+    return Div(
+        H2("Queues"),
+        P("not available"),
+    )
+
+
+def database_state(data=None):
+    return Div(
+        H2("Database"),
+        P("not available"),
+    )
+
+
 @app.get("/state")
 def state():
-    frontend_state = sentry_api.get_frontend_state(
-        project_id=os.environ.get("SENTRY_PROJECT_ID"),
-        environment=os.environ.get("SENTRY_ENVIRONMENT"),
+    frontend_data = sentry_api.get_frontend_state(
+        project_id=os.environ.get("SENTRY_FRONTEND_PROJECT_ID"),
+        environment=os.environ.get("SENTRY_FRONTEND_ENVIRONMENT"),
+    )
+
+    backend_data = sentry_api.get_backend_state(
+        project_id=os.environ.get("SENTRY_BACKEND_PROJECT_ID"),
+        environment=os.environ.get("SENTRY_BACKEND_ENVIRONMENT"),
     )
 
     return Title("Zentry"), Div(
         header("State of the System"),
+        frontend_state(frontend_data),
+        backend_state(backend_data),
+        cache_state(),
+        queue_state(),
+        database_state(),
         id="main",
     )
 
