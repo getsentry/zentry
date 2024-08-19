@@ -1,6 +1,7 @@
 python-fasthtml
 
 aiohttp[speedups]
+aiohttp-client-cache[redis]
 
 sentry-sdk
 

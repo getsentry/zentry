@@ -1,9 +1,6 @@
 import datetime
 import os
 
-import aiohttp
-
-
 SENTRY_API_BASE_URL = os.environ.get("SENTRY_API_BASE_URL", "https://sentry.io/api/0")
 
 SENTRY_API_AUTH_TOKEN = os.environ.get("SENTRY_API_AUTH_TOKEN")
@@ -17,7 +14,11 @@ client = None
 
 
 def _get_time_period(preview_time_period):
+    # We assume "now" is the end of the day today
+    # Makes it way easier to cache results of the API calls
     now = datetime.datetime.now(datetime.timezone.utc)
+    now = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    now += datetime.timedelta(days=1, microseconds=-1)
 
     if preview_time_period:
         start = now - datetime.timedelta(days=2 * TIME_PERIOD_IN_DAYS)
@@ -30,10 +31,6 @@ def _get_time_period(preview_time_period):
 
 
 async def _make_api_request(path, params={}, preview_time_period=False):
-    global client
-    if client is None:
-        client = aiohttp.ClientSession()
-
     url = SENTRY_API_BASE_URL + path
     headers = {"Authorization": f"Bearer {SENTRY_API_AUTH_TOKEN}"}
 
