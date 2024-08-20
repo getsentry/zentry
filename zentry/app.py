@@ -44,8 +44,8 @@ async def header(title):
     )
 
 
-@app.get("/state")
-async def state():
+@app.get("/")
+async def index():
     backend = RedisBackend(
         cache_name="z2",
         address=REDIS_URL,
@@ -130,14 +130,6 @@ async def state():
             footer(),
             cls="wrapper",
         )
-
-
-@app.get("/")
-async def home():
-    return Title("Zentry"), Div(
-        header("Issues"),
-        id="main",
-    )
 
 
 serve()
