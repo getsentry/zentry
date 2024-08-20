@@ -10,7 +10,7 @@ python -m venv .venv
 source .venv/bin/activate
 
 # Install (or update) requirements
-python -m pip install -r requirements.txt
+python -m pip install -r zentry/requirements.txt
 
 # Run app
-python main.py
+cd zentry && python main.py && cd ..
