@@ -210,10 +210,11 @@ async def database_state(data=None, data_prev=None):
     for item in data:
         output.append(
             Div(
-                P("Query:", item["query"]),
-                P("Time avg:", item["time_avg"]),
-                P("Time total::", item["time_total"]),
-                P("Time percentage:", item["time_percentage"]),
+                Div(item["query"], id="query"),
+                Div("Time avg", item["time_avg"], id="time_avg"),
+                Div("Time total", item["time_total"], id="time_total"),
+                Div("Time percentage", item["time_percentage"], id="time_percentage"),
+                id="database-query",
             )
         )
 
