@@ -1,20 +1,26 @@
 from fasthtml.common import *
 
-from utils import fmt_duration, fmt_percentage, fmt_percentage_signed, fmt_round_2, get_score
+from utils import (
+    fmt_duration,
+    fmt_percentage,
+    fmt_percentage_signed,
+    fmt_round_2,
+    get_score,
+)
 
 
 SQL_KEYWORDS = [
-    "AND", 
-    "DELETE", 
-    "FROM", 
-    "LIMIT", 
-    "OR", 
-    "ORDER BY", 
-    "SELECT", 
-    "SET", 
-    "UPDATE", 
-    "UPDATE", 
-    "WHERE", 
+    "AND",
+    "DELETE",
+    "FROM",
+    "LIMIT",
+    "OR",
+    "ORDER BY",
+    "SELECT",
+    "SET",
+    "UPDATE",
+    "UPDATE",
+    "WHERE",
 ]
 
 
@@ -25,10 +31,13 @@ def metric(title, id, value, value_prev, score, formatter=lambda x: x):
     change = (value_prev - value) / value_prev
 
     return Div(
-        Div(title, cls='header'),
-        Div(formatter(value), cls='value'),
-        Div(fmt_percentage_signed(change), cls=f'change {"up" if change >=0 else "down"}'),
-        Div(score, cls=f'score {score.lower()}'),
+        Div(title, cls="header"),
+        Div(formatter(value), cls="value"),
+        Div(
+            fmt_percentage_signed(change),
+            cls=f'change {"up" if change >=0 else "down"}',
+        ),
+        Div(score, cls=f"score {score.lower()}"),
         id=id,
         cls="metric",
     )
@@ -39,7 +48,7 @@ def metric_simple(id, value, formatter=lambda x: x, cls="row"):
     The card representing one metric in the databases list.
     """
     return Div(
-        Div(formatter(value), cls='value'),
+        Div(formatter(value), cls="value"),
         id=id,
         cls=cls,
     )
@@ -130,7 +139,7 @@ async def backend_state(data=None, data_prev=None):
                 id="apdex",
                 value=data["apdex"],
                 value_prev=data_prev["apdex"],
-                score=get_score("inverse_apdex", 1-data["apdex"]),
+                score=get_score("inverse_apdex", 1 - data["apdex"]),
                 formatter=fmt_round_2,
             ),
             cls="body",
@@ -150,7 +159,7 @@ async def requests_state(title, id, data=None, data_prev=None):
             ),
             cls="card",
         )
-    
+
     failure_rate = (
         data["response_rate_3xx"]
         + data["response_rate_4xx"]
@@ -283,23 +292,22 @@ async def database_state(data=None, data_prev=None):
     for item in data:
         output += [
             query(
-                item["query"], 
+                item["query"],
                 id="query",
                 cls="row query",
             ),
             metric_simple(
-                value=item["time_avg"], 
-                id="time_avg", 
+                value=item["time_avg"],
+                id="time_avg",
                 formatter=fmt_duration,
                 cls="row right",
             ),
             metric_simple(
-                value=item["time_total"], 
-                id="time_total", 
+                value=item["time_total"],
+                id="time_total",
                 formatter=fmt_duration,
                 cls="row right",
             ),
-            
         ]
 
     return Div(
@@ -312,7 +320,7 @@ async def database_state(data=None, data_prev=None):
                 Div("Time Spent", cls="row-header right"),
                 # Queries
                 *output,
-                cls="grid-card-list"
+                cls="grid-card-list",
             ),
             cls="body",
         ),

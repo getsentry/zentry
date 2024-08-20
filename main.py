@@ -28,9 +28,9 @@ sentry_sdk.init(
 app, rt = fast_app(
     pico=False,
     hdrs=(
-        Link(rel='stylesheet', href='assets/rest.css', type='text/css'),
-        Link(rel='stylesheet', href='assets/zentry.css', type='text/css'),
-    )
+        Link(rel="stylesheet", href="assets/rest.css", type="text/css"),
+        Link(rel="stylesheet", href="assets/zentry.css", type="text/css"),
+    ),
 )
 
 
@@ -67,7 +67,8 @@ async def state():
                         # Frontend Outbound Requests
                         Div(
                             await frontend_requests_state(
-                                data["frontend_requests"], data["frontend_requests_prev"]
+                                data["frontend_requests"],
+                                data["frontend_requests_prev"],
                             ),
                         ),
                         Div(Span("↔"), cls="grid-cell-arrow"),
@@ -88,14 +89,16 @@ async def state():
                     Div(
                         # Frontend
                         Div(
-                            await frontend_state(data["frontend"], data["frontend_prev"]),
+                            await frontend_state(
+                                data["frontend"], data["frontend_prev"]
+                            ),
                         ),
                         Div(Span("↕"), cls="grid-cell-arrow"),
                         # Backend
                         Div(
                             await backend_state(data["backend"], data["backend_prev"]),
                         ),
-                        cls="grid-right-single"
+                        cls="grid-right-single",
                     ),
                     Div(
                         Div(Span("↕"), cls="grid-cell-arrow"),
@@ -110,7 +113,7 @@ async def state():
                         ),
                         Div(Span("↕"), cls="grid-cell-arrow"),
                         Div(Span("↕"), cls="grid-cell-arrow"),
-                        cls="grid-right-double"
+                        cls="grid-right-double",
                     ),
                     Div(
                         # Database
