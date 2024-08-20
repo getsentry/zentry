@@ -53,6 +53,10 @@ h1 {
   -moz-osx-font-smoothing: grayscale;
 }
 
+p {
+    margin: 0;
+}
+
 /* GRID */
 .wrapper {
   max-width: 1400px;
@@ -232,7 +236,4 @@ h1 {
 .row.right {
   text-align: right;
   font-weight: 600;
-}
-.row.query {
-  color: var(--green-font);
 }

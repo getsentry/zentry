@@ -30,6 +30,7 @@ app, rt = fast_app(
     hdrs=(
         Link(rel="stylesheet", href="assets/rest.css", type="text/css"),
         Link(rel="stylesheet", href="assets/zentry.css", type="text/css"),
+        MarkdownJS(),
     ),
 )
 

@@ -19,7 +19,6 @@ SQL_KEYWORDS = [
     "SELECT",
     "SET",
     "UPDATE",
-    "UPDATE",
     "WHERE",
 ]
 
@@ -55,13 +54,15 @@ def metric_simple(id, value, formatter=lambda x: x, cls="row"):
 
 
 def query(query, id, cls="row query"):
-    # TODO: highlight SQL keywords
-    # for keyword in SQL_KEYWORDS:
-    #     query = query.replace(keyword, f"<b>{keyword}</b>")
+    """
+    Format the query in Markdown and then render the markdown.
+    This is why we need MarkdownJS in fast_app()
+    """
+    for keyword in SQL_KEYWORDS:
+        query = query.replace(keyword, f"**{keyword}**")
 
     return Div(
-        # Div(show(html2ft(query)), cls='value'),
-        Div(query),
+        Div(query, cls="marked"),
         id=id,
         cls=cls,
     )
