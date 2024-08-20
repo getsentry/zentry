@@ -227,7 +227,7 @@ async def requests_state(title, id, data=None, data_prev=None, org_data=None):
 
 async def frontend_requests_state(data=None, data_prev=None, org_data=None):
     return await requests_state(
-        "Outbound HTTP Requests",
+        "Outbound API Requests",
         "frontend-outbound-requests",
         data,
         data_prev,
@@ -237,7 +237,7 @@ async def frontend_requests_state(data=None, data_prev=None, org_data=None):
 
 async def backend_requests_state(data=None, data_prev=None, org_data=None):
     return await requests_state(
-        "Outbound HTTP Requests",
+        "Outbound API Requests",
         "backend-outbound-requests",
         data,
         data_prev,
