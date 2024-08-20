@@ -12,6 +12,7 @@ from components import (
     backend_state,
     cache_state,
     database_state,
+    footer,
     frontend_requests_state,
     frontend_state,
     queue_state,
@@ -126,6 +127,7 @@ async def state():
                 ),
                 cls="grid-wrapper",
             ),
+            footer(),
             cls="wrapper",
         )
 

@@ -65,7 +65,7 @@ p {
 .grid-wrapper {
   display: grid;
   grid-template-columns: 10fr 20fr;
-  grid-template-rows: var(--row-height) 20px;
+  grid-template-rows: var(--row-height) 20px 100;
   grid-column-gap: 5px;
   grid-row-gap: 20px;
   justify-items: stretch;
@@ -236,4 +236,17 @@ p {
 .row.right {
   text-align: right;
   font-weight: 600;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 2em 0;
+}
+
+.footer .sentry-logo {
+  width: 40px;
 }

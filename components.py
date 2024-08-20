@@ -329,3 +329,25 @@ async def database_state(data=None, data_prev=None):
         cls="card",
         style="min-height: 400px; height: unset;",
     )
+
+
+def footer():
+    return Div(
+        P(
+            "Build by",
+            A("Anton Pirker", href="https://github.com/antonpirker", target="_blank"),
+            " during Sentry Hackweek 2024. ",
+            A(
+                "Source code",
+                href="https://github.com/getsentry/zentry",
+                target="_blank",
+            ),
+            style="margin-bottom: 2em;",
+        ),
+        A(
+            Img(src="/assets/img/sentry.png", alt="Sentry logo", cls="sentry-logo"),
+            href="https://sentry.io",
+            target="_blank",
+        ),
+        cls="footer",
+    )
