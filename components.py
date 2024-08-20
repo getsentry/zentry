@@ -1,6 +1,6 @@
 from fasthtml.common import *
 
-from utils import fmt_duration, fmt_percentage, fmt_percentage_signed
+from utils import fmt_duration, fmt_percentage, fmt_percentage_signed, fmt_round_2
 
 
 def metric(title, id, value, value_prev, score, formatter=lambda x: x):
@@ -91,6 +91,7 @@ async def backend_state(data=None, data_prev=None):
                 value=data["apdex"],
                 value_prev=data_prev["apdex"],
                 score="TODO",
+                formatter=fmt_round_2,
             ),
             cls="body",
         ),

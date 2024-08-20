@@ -58,6 +58,9 @@ async def state():
 
         return Title("Zentry"), Div(
             Div(
+                H1("Sentry"),
+            ),
+            Div(
                 # Left side of grid
                 Div(
                     Div(

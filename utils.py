@@ -8,4 +8,7 @@ def fmt_percentage_signed(value):
 
 def fmt_duration(value):
     # TODO: make into s,m,h,d,wk,mo,yr
-    return f"{value:.2f}ms"
+    return f"{value:.1f}ms"
+
+def fmt_round_2(value):
+    return f"{value:.2f}"
