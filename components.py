@@ -308,7 +308,7 @@ async def database_state(data=None, data_prev=None):
                 # Headline
                 Div("Query", cls="row-header"),
                 Div("Avg Duration", cls="row-header right"),
-                Div("Total Time", cls="row-header right"),
+                Div("Time Spent", cls="row-header right"),
                 # Queries
                 *output,
                 cls="grid-card-list"
