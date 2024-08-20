@@ -8,6 +8,7 @@
   --green100: #b6eddf;
   --green200: #7cd7be;
   --green300: #33bf9d;
+  --green-font: #196351;
 
   --yellow100: #fee8b4;
   --yellow200: #ffd576;
@@ -21,34 +22,35 @@
 * {
   font-family: Rubik, Avenir Next, Helvetica Neue, sans-serif;
 }
-html { 
-    /*
+html {
+  /*
     Background image by Sarah Dorweiler
     https://unsplash.com/photos/green-leafed-plant-on-clear-glass-vase-filled-with-water-x2Tmfd1-SgA
     */
-    background: url(/assets/img/bg-sarah-dorweiler-unsplah.jpg) no-repeat center center fixed; 
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-  }
+  background: url(/assets/img/bg-sarah-dorweiler-unsplah.jpg) no-repeat center
+    center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
 
 h1 {
-    color: rgb(43, 34, 51);
-    font-family: Rubik, Avenir Next, Helvetica Neue, sans-serif;
-    font-size: 26px;
-    font-weight: 600;
-    letter-spacing: -0.26px;
-    line-height: 40px;
-    margin: 1em 0;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    column-gap: 8px;
-    row-gap: 8px;
-    text-overflow: ellipsis;
-    text-wrap-mode: nowrap;
-    white-space-collapse: collapse;
-    -moz-osx-font-smoothing: grayscale;
+  color: rgb(43, 34, 51);
+  font-family: Rubik, Avenir Next, Helvetica Neue, sans-serif;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.26px;
+  line-height: 40px;
+  margin: 1em 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  column-gap: 8px;
+  row-gap: 8px;
+  text-overflow: ellipsis;
+  text-wrap-mode: nowrap;
+  white-space-collapse: collapse;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* GRID */
@@ -69,7 +71,9 @@ h1 {
 .grid-left {
   display: grid;
   grid-template-columns: 1fr var(--column-width-arrow);
-  grid-template-rows: var(--row-height) var(--row-height-arrow) var(--row-height);
+  grid-template-rows: var(--row-height) var(--row-height-arrow) var(
+      --row-height
+    );
   grid-column-gap: 5px;
   grid-row-gap: 5px;
   justify-items: stretch;
@@ -79,7 +83,9 @@ h1 {
 .grid-right-single {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: var(--row-height) var(--row-height-arrow) var(--row-height);
+  grid-template-rows: var(--row-height) var(--row-height-arrow) var(
+      --row-height
+    );
   grid-column-gap: 5px;
   grid-row-gap: 5px;
   justify-items: stretch;
@@ -89,7 +95,9 @@ h1 {
 .grid-right-double {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: var(--row-height-arrow) var(--row-height) var(--row-height-arrow);
+  grid-template-rows: var(--row-height-arrow) var(--row-height) var(
+      --row-height-arrow
+    );
   grid-column-gap: 15px;
   grid-row-gap: 5px;
   justify-items: stretch;
@@ -102,6 +110,16 @@ h1 {
   align-items: center;
   font-weight: bold;
   font-size: 25px;
+}
+.grid-card-list {
+  display: grid;
+  grid-template-columns: 1fr 100px 100px;
+  grid-template-rows: 40px;
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
+  justify-items: stretch;
+  align-items: stretch;
+  margin: 1.2em;
 }
 
 /* CARD */
@@ -192,4 +210,29 @@ h1 {
 .metric .score.poor {
   color: var(--red300);
   background-color: var(--red100);
+}
+
+/* TABLE */
+.row-header {
+  font-weight: 600;
+  border-bottom-color: rgb(224, 220, 229);
+  border-bottom-style: solid;
+  border-bottom-width: 0.833333px;
+}
+
+.row-header.right {
+  text-align: right;
+}
+.row {
+  padding: 0.5em 0;
+  border-bottom-color: rgb(224, 220, 229);
+  border-bottom-style: solid;
+  border-bottom-width: 0.833333px;
+}
+.row.right {
+  text-align: right;
+  font-weight: 600;
+}
+.row.query {
+  color: var(--green-font);
 }

@@ -117,7 +117,7 @@ async def state():
                         Div(
                             await database_state(data["database"]),
                         ),
-                        cls="grid-right-single"
+                        cls="grid-right-single",
                     ),
                 ),
                 cls="grid-wrapper",

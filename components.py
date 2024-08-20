@@ -3,6 +3,21 @@ from fasthtml.common import *
 from utils import fmt_duration, fmt_percentage, fmt_percentage_signed, fmt_round_2
 
 
+SQL_KEYWORDS = [
+    "AND", 
+    "DELETE", 
+    "FROM", 
+    "LIMIT", 
+    "OR", 
+    "ORDER BY", 
+    "SELECT", 
+    "SET", 
+    "UPDATE", 
+    "UPDATE", 
+    "WHERE", 
+]
+
+
 def metric(title, id, value, value_prev, score, formatter=lambda x: x):
     """
     The card representing one metric.
@@ -15,7 +30,31 @@ def metric(title, id, value, value_prev, score, formatter=lambda x: x):
         Div(fmt_percentage_signed(change), cls=f'change {"up" if change >=0 else "down"}'),
         Div(score, cls='score meh'),
         id=id,
-        cls='metric'
+        cls="metric",
+    )
+
+
+def metric_simple(id, value, formatter=lambda x: x, cls="row"):
+    """
+    The card representing one metric in the databases list.
+    """
+    return Div(
+        Div(formatter(value), cls='value'),
+        id=id,
+        cls=cls,
+    )
+
+
+def query(query, id, cls="row query"):
+    # TODO: highlight SQL keywords
+    # for keyword in SQL_KEYWORDS:
+    #     query = query.replace(keyword, f"<b>{keyword}</b>")
+
+    return Div(
+        # Div(show(html2ft(query)), cls='value'),
+        Div(query),
+        id=id,
+        cls=cls,
     )
 
 
@@ -241,22 +280,42 @@ async def queue_state(data=None, data_prev=None):
 async def database_state(data=None, data_prev=None):
     output = []
     for item in data:
-        output.append(
-            Div(
-                Div(item["query"], id="query"),
-                Div("Time avg", item["time_avg"], id="time_avg"),
-                Div("Time total", item["time_total"], id="time_total"),
-                Div("Time percentage", item["time_percentage"], id="time_percentage"),
-                id="database-query",
-            )
-        )
+        output += [
+            query(
+                item["query"], 
+                id="query",
+                cls="row query",
+            ),
+            metric_simple(
+                value=item["time_avg"], 
+                id="time_avg", 
+                formatter=fmt_duration,
+                cls="row right",
+            ),
+            metric_simple(
+                value=item["time_total"], 
+                id="time_total", 
+                formatter=fmt_duration,
+                cls="row right",
+            ),
+            
+        ]
 
     return Div(
         H2("Database"),
         Div(
-            *output,
+            Div(
+                # Headline
+                Div("Query", cls="row-header"),
+                Div("Avg Duration", cls="row-header right"),
+                Div("Total Time", cls="row-header right"),
+                # Queries
+                *output,
+                cls="grid-card-list"
+            ),
             cls="body",
         ),
         id="database",
         cls="card",
+        style="min-height: 400px; height: unset;",
     )
