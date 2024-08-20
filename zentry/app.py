@@ -32,6 +32,7 @@ app, rt = fast_app(
         Link(rel="stylesheet", href="assets/rest.css", type="text/css"),
         Link(rel="stylesheet", href="assets/zentry.css", type="text/css"),
         MarkdownJS(),
+        Link(rel="icon", type="image/png", href="https://s1.sentry-cdn.com/_static/0c41bcfa548dfc7d27d582cd94b34af7/sentry/images/favicon.png"),
     ),
 )
 
