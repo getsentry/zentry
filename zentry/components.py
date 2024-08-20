@@ -68,10 +68,18 @@ def query(query, id, cls="row query"):
     )
 
 
-async def frontend_state(data=None, data_prev=None):
+async def frontend_state(data=None, data_prev=None, org_data=None):
+    header = H2(
+        "Frotend",
+        A(
+            "⌕",
+            href=f'{org_data["frontend_url"]}/insights/browser/pageloads/?project={org_data["frontend_id"]}',
+            target="_blank",
+        ),
+    )
     if not data:
         return Div(
-            H2("Frotend"),
+            header,
             Div(
                 P("No data available"),
                 cls="body",
@@ -80,7 +88,7 @@ async def frontend_state(data=None, data_prev=None):
         )
 
     return Div(
-        H2("Frontend"),
+        header,
         Div(
             metric(
                 title="Time to First Byte",
@@ -113,10 +121,19 @@ async def frontend_state(data=None, data_prev=None):
     )
 
 
-async def backend_state(data=None, data_prev=None):
+async def backend_state(data=None, data_prev=None, org_data=None):
+    header = H2(
+        "Backend",
+        A(
+            "⌕",
+            href=f'{org_data["backend_url"]}/performance/?project={org_data["backend_id"]}',
+            target="_blank",
+        ),
+    )
+
     if not data:
         return Div(
-            H2("Backend"),
+            header,
             Div(
                 P("No data available"),
                 cls="body",
@@ -125,7 +142,7 @@ async def backend_state(data=None, data_prev=None):
         )
 
     return Div(
-        H2("Backend"),
+        header,
         Div(
             metric(
                 title="Failure Rate",
@@ -150,10 +167,19 @@ async def backend_state(data=None, data_prev=None):
     )
 
 
-async def requests_state(title, id, data=None, data_prev=None):
+async def requests_state(title, id, data=None, data_prev=None, org_data=None):
+    header = H2(
+        title,
+        A(
+            "⌕",
+            href=f'{org_data["url"]}/insights/http/?project={org_data["id"]}',
+            target="_blank",
+        ),
+    )
+
     if not data:
         return Div(
-            H2(title),
+            header,
             Div(
                 P("No data available"),
                 cls="body",
@@ -174,7 +200,7 @@ async def requests_state(title, id, data=None, data_prev=None):
     )
 
     return Div(
-        H2(title),
+        header,
         Div(
             metric(
                 title="Failure Rate",
@@ -199,28 +225,38 @@ async def requests_state(title, id, data=None, data_prev=None):
     )
 
 
-async def frontend_requests_state(data=None, data_prev=None):
+async def frontend_requests_state(data=None, data_prev=None, org_data=None):
     return await requests_state(
         "Outbound HTTP Requests",
         "frontend-outbound-requests",
         data,
         data_prev,
+        {"url": org_data["frontend_url"], "id": org_data["frontend_id"]},
     )
 
 
-async def backend_requests_state(data=None, data_prev=None):
+async def backend_requests_state(data=None, data_prev=None, org_data=None):
     return await requests_state(
         "Outbound HTTP Requests",
         "backend-outbound-requests",
         data,
         data_prev,
+        {"url": org_data["backend_url"], "id": org_data["backend_id"]},
     )
 
 
-async def cache_state(data=None, data_prev=None):
+async def cache_state(data=None, data_prev=None, org_data=None):
+    header = H2(
+        "Caches",
+        A(
+            "⌕",
+            href=f'{org_data["backend_url"]}/insights/caches/?project={org_data["backend_id"]}',
+            target="_blank",
+        ),
+    )
     if not data:
         return Div(
-            H2("Caches"),
+            header,
             Div(
                 P("No data available"),
                 cls="body",
@@ -229,7 +265,7 @@ async def cache_state(data=None, data_prev=None):
         )
 
     return Div(
-        H2("Caches"),
+        header,
         metric(
             title="Cache hit rate",
             id="cahe_hit_rate",
@@ -242,10 +278,19 @@ async def cache_state(data=None, data_prev=None):
     )
 
 
-async def queue_state(data=None, data_prev=None):
+async def queue_state(data=None, data_prev=None, org_data=None):
+    header = H2(
+        "Queues",
+        A(
+            "⌕",
+            href=f'{org_data["backend_url"]}/insights/queues/?project={org_data["backend_id"]}',
+            target="_blank",
+        ),
+    )
+
     if not data:
         return Div(
-            H2("Queues"),
+            header,
             Div(
                 P("No data available"),
                 cls="body",
@@ -254,7 +299,7 @@ async def queue_state(data=None, data_prev=None):
         )
 
     return Div(
-        H2("Queues"),
+        header,
         Div(
             # TODO: if we add this, the UI looks ugly, so disabling for now
             # metric(
@@ -288,7 +333,7 @@ async def queue_state(data=None, data_prev=None):
     )
 
 
-async def database_state(data=None, data_prev=None):
+async def database_state(data=None, org_data=None):
     output = []
     for item in data:
         output += [
@@ -311,8 +356,17 @@ async def database_state(data=None, data_prev=None):
             ),
         ]
 
+    header = H2(
+        "Database",
+        A(
+            "⌕",
+            href=f'{org_data["backend_url"]}/insights/database/?project={org_data["backend_id"]}',
+            target="_blank",
+        ),
+    )
+
     return Div(
-        H2("Database"),
+        header,
         Div(
             Div(
                 # Headline

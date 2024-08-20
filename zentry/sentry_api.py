@@ -5,7 +5,9 @@ SENTRY_API_BASE_URL = os.environ.get("SENTRY_API_BASE_URL", "https://sentry.io/a
 
 SENTRY_API_AUTH_TOKEN = os.environ.get("SENTRY_API_AUTH_TOKEN")
 if not SENTRY_API_AUTH_TOKEN:
-    raise ValueError("Please set the SENTRY_API_AUTH_TOKEN environment variable. (See README.md)")
+    raise ValueError(
+        "Please set the SENTRY_API_AUTH_TOKEN environment variable. (See README.md)"
+    )
 
 REFERRER = os.environ.get("REFERRER", "zentry")
 TIME_PERIOD_IN_DAYS = 1
@@ -49,7 +51,9 @@ async def _make_api_request(path, params={}, preview_time_period=False):
         return await response.json()
 
 
-async def get_frontend_state(org_slug, project_id, environment, preview_time_period=False):
+async def get_frontend_state(
+    org_slug, project_id, environment, preview_time_period=False
+):
     response = await _make_api_request(
         path=f"/organizations/{org_slug}/events/",
         params={
@@ -92,7 +96,9 @@ async def get_frontend_state(org_slug, project_id, environment, preview_time_per
     return clean_data
 
 
-async def get_backend_state(org_slug, project_id, environment, preview_time_period=False):
+async def get_backend_state(
+    org_slug, project_id, environment, preview_time_period=False
+):
     response = await _make_api_request(
         path=f"/organizations/{org_slug}/events/",
         params={
@@ -127,7 +133,9 @@ async def get_backend_state(org_slug, project_id, environment, preview_time_peri
     return clean_data
 
 
-async def get_requests_state(org_slug, project_id, environment, preview_time_period=False):
+async def get_requests_state(
+    org_slug, project_id, environment, preview_time_period=False
+):
     response = await _make_api_request(
         path=f"/organizations/{org_slug}/events/",
         params={
@@ -250,7 +258,9 @@ async def get_queue_state(org_slug, project_id, environment, preview_time_period
     return clean_data
 
 
-async def get_database_state(org_slug, project_id, environment, preview_time_period=False):
+async def get_database_state(
+    org_slug, project_id, environment, preview_time_period=False
+):
     response = await _make_api_request(
         path=f"/organizations/{org_slug}/events/",
         params={
@@ -290,28 +300,70 @@ async def get_database_state(org_slug, project_id, environment, preview_time_per
     return clean_data
 
 
+async def get_project_data(org_slug, project_id):
+    path = f"/projects/{org_slug}/{project_id}/"
+    url = SENTRY_API_BASE_URL + path
+    headers = {"Authorization": f"Bearer {SENTRY_API_AUTH_TOKEN}"}
+
+    async with client.get(url, headers=headers) as response:
+        project_data = await response.json()
+
+    return project_data
+
+
 async def get_data():
     org_slug = os.environ.get("SENTRY_ORG_SLUG")
     if not org_slug:
-        raise ValueError("Please set the SENTRY_ORG_SLUG environment variable. (See README.md)")
-    
+        raise ValueError(
+            "Please set the SENTRY_ORG_SLUG environment variable. (See README.md)"
+        )
+
     frontend_id = os.environ.get("SENTRY_FRONTEND_PROJECT_ID")
     if not frontend_id:
-        raise ValueError("Please set the SENTRY_FRONTEND_PROJECT_ID environment variable. (See README.md)")
-    
+        raise ValueError(
+            "Please set the SENTRY_FRONTEND_PROJECT_ID environment variable. (See README.md)"
+        )
+
     frontend_env = os.environ.get("SENTRY_FRONTEND_ENVIRONMENT")
     if not frontend_env:
-        raise ValueError("Please set the SENTRY_FRONTEND_ENVIRONMENT environment variable. (See README.md)")
-    
+        raise ValueError(
+            "Please set the SENTRY_FRONTEND_ENVIRONMENT environment variable. (See README.md)"
+        )
+
     backend_id = os.environ.get("SENTRY_BACKEND_PROJECT_ID")
     if not backend_id:
-        raise ValueError("Please set the SENTRY_BACKEND_PROJECT_ID environment variable. (See README.md)")
-    
+        raise ValueError(
+            "Please set the SENTRY_BACKEND_PROJECT_ID environment variable. (See README.md)"
+        )
+
     backend_env = os.environ.get("SENTRY_BACKEND_ENVIRONMENT")
     if not backend_env:
-        raise ValueError("Please set the SENTRY_BACKEND_ENVIRONMENT environment variable. (See README.md)")
+        raise ValueError(
+            "Please set the SENTRY_BACKEND_ENVIRONMENT environment variable. (See README.md)"
+        )
 
     data = {}
+
+    frontend_project_data = await get_project_data(org_slug, frontend_id)
+    backend_project_data = await get_project_data(org_slug, backend_id)
+
+    if (
+        frontend_project_data["organization"]["name"]
+        == backend_project_data["organization"]["name"]
+    ):
+        org_name = frontend_project_data["organization"]["name"]
+    else:
+        org_name = f"{frontend_project_data['organization']['name']} / {backend_project_data['organization']['name']}"
+
+    data["org"] = {
+        "name": org_name,
+        "frontend_id": frontend_id,
+        "frontend_url": frontend_project_data["organization"]["links"][
+            "organizationUrl"
+        ],
+        "backend_id": backend_id,
+        "backend_url": backend_project_data["organization"]["links"]["organizationUrl"],
+    }
 
     data["frontend"] = await get_frontend_state(
         org_slug=org_slug,

@@ -34,6 +34,10 @@ html {
   -o-background-size: cover;
   background-size: cover;
 }
+a {
+  color: var(--green-font);
+  text-decoration: none;
+}
 
 h1 {
   color: rgb(43, 34, 51);
@@ -150,6 +154,11 @@ p {
   border-bottom-style: solid;
   border-bottom-width: 0.833333px;
 }
+.card h2 a {
+  float: right; 
+  margin-top: -0.15em;
+}
+
 .card .body {
   display: flex;
   justify-content: space-evenly;

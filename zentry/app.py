@@ -32,7 +32,11 @@ app, rt = fast_app(
         Link(rel="stylesheet", href="assets/rest.css", type="text/css"),
         Link(rel="stylesheet", href="assets/zentry.css", type="text/css"),
         MarkdownJS(),
-        Link(rel="icon", type="image/png", href="https://s1.sentry-cdn.com/_static/0c41bcfa548dfc7d27d582cd94b34af7/sentry/images/favicon.png"),
+        Link(
+            rel="icon",
+            type="image/png",
+            href="https://s1.sentry-cdn.com/_static/0c41bcfa548dfc7d27d582cd94b34af7/sentry/images/favicon.png",
+        ),
     ),
 )
 
@@ -61,7 +65,7 @@ async def index():
 
         return Title("Zentry"), Div(
             Div(
-                H1("Sentry"),
+                H1(data["org"]["name"]),
             ),
             Div(
                 # Left side of grid
@@ -72,6 +76,7 @@ async def index():
                             await frontend_requests_state(
                                 data["frontend_requests"],
                                 data["frontend_requests_prev"],
+                                data["org"],
                             ),
                         ),
                         Div(Span("↔"), cls="grid-cell-arrow"),
@@ -80,7 +85,9 @@ async def index():
                         # Backend Outbound Requests
                         Div(
                             await backend_requests_state(
-                                data["backend_requests"], data["backend_requests_prev"]
+                                data["backend_requests"],
+                                data["backend_requests_prev"],
+                                data["org"],
                             ),
                         ),
                         Div(Span("↔"), cls="grid-cell-arrow"),
@@ -93,13 +100,17 @@ async def index():
                         # Frontend
                         Div(
                             await frontend_state(
-                                data["frontend"], data["frontend_prev"]
+                                data["frontend"],
+                                data["frontend_prev"],
+                                data["org"],
                             ),
                         ),
                         Div(Span("↕"), cls="grid-cell-arrow"),
                         # Backend
                         Div(
-                            await backend_state(data["backend"], data["backend_prev"]),
+                            await backend_state(
+                                data["backend"], data["backend_prev"], data["org"]
+                            ),
                         ),
                         cls="grid-right-single",
                     ),
@@ -108,11 +119,15 @@ async def index():
                         Div(Span("↕"), cls="grid-cell-arrow"),
                         # Caches
                         Div(
-                            await cache_state(data["cache"], data["cache_prev"]),
+                            await cache_state(
+                                data["cache"], data["cache_prev"], data["org"]
+                            ),
                         ),
                         # Queues
                         Div(
-                            await queue_state(data["queue"], data["queue_prev"]),
+                            await queue_state(
+                                data["queue"], data["queue_prev"], data["org"]
+                            ),
                         ),
                         Div(Span("↕"), cls="grid-cell-arrow"),
                         Div(Span("↕"), cls="grid-cell-arrow"),
@@ -121,7 +136,7 @@ async def index():
                     Div(
                         # Database
                         Div(
-                            await database_state(data["database"]),
+                            await database_state(data["database"], data["org"]),
                         ),
                         cls="grid-right-single",
                     ),
