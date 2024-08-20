@@ -21,9 +21,12 @@
 * {
   font-family: Rubik, Avenir Next, Helvetica Neue, sans-serif;
 }
-
 html { 
-    background: url(/assets/img/bg.jpg) no-repeat center center fixed; 
+    /*
+    Background image by Sarah Dorweiler
+    https://unsplash.com/photos/green-leafed-plant-on-clear-glass-vase-filled-with-water-x2Tmfd1-SgA
+    */
+    background: url(/assets/img/bg-sarah-dorweiler-unsplah.jpg) no-repeat center center fixed; 
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
