@@ -10,49 +10,56 @@ def metric(title, id, value, value_prev, score, formatter=lambda x: x):
     change = (value_prev - value) / value_prev
 
     return Div(
-        Div(title, cls="title"),
-        Div(formatter(value), cls="value"),
-        Div(fmt_percentage_signed(change), cls="change"),
-        Div(score, cls="score"),
+        Div(title, cls='header'),
+        Div(formatter(value), cls='value'),
+        Div(fmt_percentage_signed(change), cls=f'change {"up" if change >=0 else "down"}'),
+        Div(score, cls='score meh'),
         id=id,
-        cls="metric",
+        cls='metric'
     )
 
 
 async def frontend_state(data=None, data_prev=None):
     if not data:
         return Div(
-            H2("Frontend"),
-            P("No data available"),
-            id="frontend",
+            H2("Frotend"),
+            Div(
+                P("No data available"),
+                cls="body",
+            ),
+            cls="card",
         )
 
     return Div(
         H2("Frontend"),
-        metric(
-            title="Web Server Responsiveness (Time to first byte)",
-            id="ttfb",
-            value=data["ttfb"],
-            value_prev=data_prev["ttfb"],
-            score="TODO",
-            formatter=fmt_duration,
-        ),
-        metric(
-            title="Time the first content takes to render (First Contentful Paint)",
-            id="fcp",
-            value=data["fcp"],
-            value_prev=data_prev["fcp"],
-            score="TODO",
-            formatter=fmt_duration,
-        ),
-        metric(
-            title="Responsiveness (Interaction to Next Paint)",
-            id="inp",
-            value=data["inp"],
-            value_prev=data_prev["inp"],
-            score="TODO",
+        Div(
+            metric(
+                title="Time to First Byte",
+                id="ttfb",
+                value=data["ttfb"],
+                value_prev=data_prev["ttfb"],
+                score="TODO",
+                formatter=fmt_duration,
+            ),
+            metric(
+                title="First Contentful Paint",
+                id="fcp",
+                value=data["fcp"],
+                value_prev=data_prev["fcp"],
+                score="TODO",
+                formatter=fmt_duration,
+            ),
+            metric(
+                title="Interaction to Next Paint",
+                id="inp",
+                value=data["inp"],
+                value_prev=data_prev["inp"],
+                score="TODO",
+            ),
+            cls="body",
         ),
         id="frontend",
+        cls="card",
     )
 
 
@@ -60,28 +67,35 @@ async def backend_state(data=None, data_prev=None):
     if not data:
         return Div(
             H2("Backend"),
-            P("No data available"),
-            id="backend",
+            Div(
+                P("No data available"),
+                cls="body",
+            ),
+            cls="card",
         )
 
     return Div(
         H2("Backend"),
-        metric(
-            title="Failure Rate",
-            id="failure-rate",
-            value=data["failure_rate"],
-            value_prev=data_prev["failure_rate"],
-            score="TODO",
-            formatter=fmt_percentage,
-        ),
-        metric(
-            title="Apdex",
-            id="apdex",
-            value=data["apdex"],
-            value_prev=data_prev["apdex"],
-            score="TODO",
+        Div(
+            metric(
+                title="Failure Rate",
+                id="failure-rate",
+                value=data["failure_rate"],
+                value_prev=data_prev["failure_rate"],
+                score="TODO",
+                formatter=fmt_percentage,
+            ),
+            metric(
+                title="Apdex",
+                id="apdex",
+                value=data["apdex"],
+                value_prev=data_prev["apdex"],
+                score="TODO",
+            ),
+            cls="body",
         ),
         id="backend",
+        cls="card",
     )
 
 
@@ -89,10 +103,13 @@ async def requests_state(title, id, data=None, data_prev=None):
     if not data:
         return Div(
             H2(title),
-            P("No data available"),
-            id=id,
+            Div(
+                P("No data available"),
+                cls="body",
+            ),
+            cls="card",
         )
-
+    
     failure_rate = (
         data["response_rate_3xx"]
         + data["response_rate_4xx"]
@@ -107,29 +124,33 @@ async def requests_state(title, id, data=None, data_prev=None):
 
     return Div(
         H2(title),
-        metric(
-            title="Average Duration",
-            id="time_avg",
-            value=data["time_avg"],
-            value_prev=data_prev["time_avg"],
-            score="TODO",
-            formatter=fmt_duration,
-        ),
-        metric(
-            title="Failure Rate",
-            id="time_avg",
-            value=failure_rate,
-            value_prev=failure_rate_prev,
-            score="TODO",
-            formatter=fmt_percentage,
+        Div(
+            metric(
+                title="Failure Rate",
+                id="time_avg",
+                value=failure_rate,
+                value_prev=failure_rate_prev,
+                score="TODO",
+                formatter=fmt_percentage,
+            ),
+            metric(
+                title="Avg Duration",
+                id="time_avg",
+                value=data["time_avg"],
+                value_prev=data_prev["time_avg"],
+                score="TODO",
+                formatter=fmt_duration,
+            ),
+            cls="body",
         ),
         id=id,
+        cls="card",
     )
 
 
 async def frontend_requests_state(data=None, data_prev=None):
     return await requests_state(
-        "Frontend Outbound Requests",
+        "Outbound HTTP Requests",
         "frontend-outbound-requests",
         data,
         data_prev,
@@ -138,7 +159,7 @@ async def frontend_requests_state(data=None, data_prev=None):
 
 async def backend_requests_state(data=None, data_prev=None):
     return await requests_state(
-        "Backend Outbound Requests",
+        "Outbound HTTP Requests",
         "backend-outbound-requests",
         data,
         data_prev,
@@ -148,13 +169,16 @@ async def backend_requests_state(data=None, data_prev=None):
 async def cache_state(data=None, data_prev=None):
     if not data:
         return Div(
-            H2("Cache"),
-            P("No data available"),
-            id="cache",
+            H2("Caches"),
+            Div(
+                P("No data available"),
+                cls="body",
+            ),
+            cls="card",
         )
 
     return Div(
-        H2("Cache"),
+        H2("Caches"),
         metric(
             title="Cache hit rate",
             id="cahe_hit_rate",
@@ -171,37 +195,45 @@ async def queue_state(data=None, data_prev=None):
     if not data:
         return Div(
             H2("Queues"),
-            P("No data available"),
-            id="queue",
+            Div(
+                P("No data available"),
+                cls="body",
+            ),
+            cls="card",
         )
 
     return Div(
         H2("Queues"),
-        metric(
-            title="Average processing time",
-            id="processing_time_avg",
-            value=data["processing_time_avg"],
-            value_prev=data_prev["processing_time_avg"],
-            score="TODO",
-            formatter=fmt_duration,
-        ),
-        metric(
-            title="Average time in queue",
-            id="time_in_queue_avg",
-            value=data["time_in_queue_avg"],
-            value_prev=data_prev["time_in_queue_avg"],
-            score="TODO",
-            formatter=fmt_duration,
-        ),
-        metric(
-            title="Failure Rate",
-            id="queue_failure_rate",
-            value=1 - data["success_rate"],
-            value_prev=1 - data_prev["success_rate"],
-            score="TODO",
-            formatter=fmt_percentage,
+        Div(
+            # TODO: if we add this, the UI looks ugly, so disabling for now
+            # metric(
+            #     title="Failure Rate",
+            #     id="queue_failure_rate",
+            #     value=1 - data["success_rate"],
+            #     value_prev=1 - data_prev["success_rate"],
+            #     score="TODO",
+            #     formatter=fmt_percentage,
+            # ),
+            metric(
+                title="Avg Processing Time",
+                id="processing_time_avg",
+                value=data["processing_time_avg"],
+                value_prev=data_prev["processing_time_avg"],
+                score="TODO",
+                formatter=fmt_duration,
+            ),
+            metric(
+                title="Avg Time in Queue",
+                id="time_in_queue_avg",
+                value=data["time_in_queue_avg"],
+                value_prev=data_prev["time_in_queue_avg"],
+                score="TODO",
+                formatter=fmt_duration,
+            ),
+            cls="body",
         ),
         id="queue",
+        cls="card",
     )
 
 
@@ -220,6 +252,10 @@ async def database_state(data=None, data_prev=None):
 
     return Div(
         H2("Database"),
-        *output,
+        Div(
+            *output,
+            cls="body",
+        ),
         id="database",
+        cls="card",
     )

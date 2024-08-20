@@ -25,7 +25,13 @@ sentry_sdk.init(
     # debug=True,
 )
 
-app, rt = fast_app()
+app, rt = fast_app(
+    pico=False,
+    hdrs=(
+        Link(rel='stylesheet', href='assets/rest.css', type='text/css'),
+        Link(rel='stylesheet', href='assets/zentry.css', type='text/css'),
+    )
+)
 
 
 async def header(title):
@@ -51,19 +57,69 @@ async def state():
         data = await sentry_api.get_data()
 
         return Title("Zentry"), Div(
-            await header("State of the System"),
-            await frontend_state(data["frontend"], data["frontend_prev"]),
-            await frontend_requests_state(
-                data["frontend_requests"], data["frontend_requests_prev"]
+            Div(
+                # Left side of grid
+                Div(
+                    Div(
+                        # Frontend Outbound Requests
+                        Div(
+                            await frontend_requests_state(
+                                data["frontend_requests"], data["frontend_requests_prev"]
+                            ),
+                        ),
+                        Div(Span("↔"), cls="grid-cell-arrow"),
+                        Div(),
+                        Div(),
+                        # Backend Outbound Requests
+                        Div(
+                            await backend_requests_state(
+                                data["backend_requests"], data["backend_requests_prev"]
+                            ),
+                        ),
+                        Div(Span("↔"), cls="grid-cell-arrow"),
+                        cls="grid-left",
+                    ),
+                ),
+                # Right side of grid
+                Div(
+                    Div(
+                        # Frontend
+                        Div(
+                            await frontend_state(data["frontend"], data["frontend_prev"]),
+                        ),
+                        Div(Span("↕"), cls="grid-cell-arrow"),
+                        # Backend
+                        Div(
+                            await backend_state(data["backend"], data["backend_prev"]),
+                        ),
+                        cls="grid-right-single"
+                    ),
+                    Div(
+                        Div(Span("↕"), cls="grid-cell-arrow"),
+                        Div(Span("↕"), cls="grid-cell-arrow"),
+                        # Caches
+                        Div(
+                            await cache_state(data["cache"], data["cache_prev"]),
+                        ),
+                        # Queues
+                        Div(
+                            await queue_state(data["queue"], data["queue_prev"]),
+                        ),
+                        Div(Span("↕"), cls="grid-cell-arrow"),
+                        Div(Span("↕"), cls="grid-cell-arrow"),
+                        cls="grid-right-double"
+                    ),
+                    Div(
+                        # Database
+                        Div(
+                            await database_state(data["database"]),
+                        ),
+                        cls="grid-right-single"
+                    ),
+                ),
+                cls="grid-wrapper",
             ),
-            await backend_state(data["backend"], data["backend_prev"]),
-            await backend_requests_state(
-                data["backend_requests"], data["backend_requests_prev"]
-            ),
-            await cache_state(data["cache"], data["cache_prev"]),
-            await queue_state(data["queue"], data["queue_prev"]),
-            await database_state(data["database"]),
-            id="main",
+            cls="wrapper",
         )
 
 

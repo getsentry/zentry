@@ -1,0 +1,161 @@
+:root {
+  --row-height: 240px;
+  --metric-height: 140px;
+
+  --green100: #b6eddf;
+  --green200: #7cd7be;
+  --green300: #33bf9d;
+
+  --yellow100: #fee8b4;
+  --yellow200: #ffd576;
+  --yellow300: #ffc326;
+  --yellow-font: rgb(133, 108, 0);
+
+  --red100: #fbc6c8;
+  --red200: #fe918e;
+  --red300: #f4535a;
+}
+* {
+  font-family: Rubik, Avenir Next, Helvetica Neue, sans-serif;
+}
+
+/* GRID */
+.wrapper {
+  max-width: 1400px;
+  margin: auto;
+}
+.grid-wrapper {
+  display: grid;
+  grid-template-columns: 10fr 20fr;
+  grid-template-rows: var(--row-height) 20px;
+  grid-column-gap: 5px;
+  grid-row-gap: 20px;
+  justify-items: stretch;
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+.grid-left {
+  display: grid;
+  grid-template-columns: 1fr 30px;
+  grid-template-rows: var(--row-height) 30px var(--row-height);
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
+  justify-items: stretch;
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+.grid-right-single {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: var(--row-height) 30px var(--row-height);
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
+  justify-items: stretch;
+  align-items: stretch;
+  margin-bottom: 5px;
+}
+.grid-right-double {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 30px var(--row-height) 30px;
+  grid-column-gap: 15px;
+  grid-row-gap: 5px;
+  justify-items: stretch;
+  align-items: stretch;
+  margin-bottom: 5px;
+}
+.grid-cell-arrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 25px;
+}
+
+/* CARD */
+.card {
+  width: 100%;
+  height: 100%;
+  color: rgb(62, 52, 70);
+  -moz-osx-font-smoothing: grayscale;
+  border-color: rgb(224, 220, 229);
+  border-radius: 6px;
+  border-style: solid;
+  border-width: 0.833333px;
+  overflow: hidden;
+}
+.card h2 {
+  margin: 0;
+  padding: 0.8em 1em 0.8em 1em;
+  color: rgb(128, 112, 143);
+  background-color: rgb(250, 249, 251);
+  font-size: 1.2em;
+  font-weight: 600;
+  border-bottom-color: rgb(224, 220, 229);
+  border-bottom-style: solid;
+  border-bottom-width: 0.833333px;
+}
+.card .body {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+/* METRIC */
+.metric {
+  color: rgb(62, 52, 70);
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+
+  border-color: rgb(224, 220, 229);
+  border-radius: 6px;
+  border-style: solid;
+  border-width: 0.833333px;
+
+  overflow: hidden;
+
+  min-width: 30%;
+  height: var(--metric-height);
+  margin: 15px;
+}
+.metric .header {
+  font-size: 1em;
+  font-weight: 450;
+  margin: 10px;
+}
+.metric .value {
+  font-size: 1.6em;
+  font-weight: 600;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}
+.metric .change {
+  margin-bottom: 0.5em;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+.metric .change.up::after {
+  content: "⇧";
+}
+.metric .change.down::after {
+  content: "⇩";
+}
+.metric .score {
+  margin: 0;
+  padding: 0.4em 0;
+  font-weight: 600;
+  border-top-color: rgb(224, 220, 229);
+  border-top-style: solid;
+  border-top-width: 0.833333px;
+}
+.metric .score.good {
+  color: var(--green300);
+  background-color: var(--green100);
+}
+.metric .score.meh {
+  color: var(--yellow-font);
+  background-color: var(--yellow100);
+}
+.metric .score.poor {
+  color: var(--red300);
+  background-color: var(--red100);
+}
