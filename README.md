@@ -4,10 +4,20 @@ A Zen version of Sentry.
 
 Build by [Anton Pirker](https://github.com/antonpirker) during Sentry Hackweek 2024.
 
+## Prerequisites
+
+- You need to have Python installed (It was tested with Python 3.12)
+- Access to a running Redis server.
+
 ## Configure
 
 The app excepts the following environment variables to be set:
 
+- `ZENTRY_REDIS_URL`
+
+    An URL to a Redis server. This is used for caching HTTP requests made to the Sentry API.
+
+    Default: `"redis://localhost:6379"`
     
 - `SENTRY_API_AUTH_TOKEN`
 
