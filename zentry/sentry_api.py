@@ -5,7 +5,7 @@ SENTRY_API_BASE_URL = os.environ.get("SENTRY_API_BASE_URL", "https://sentry.io/a
 
 SENTRY_API_AUTH_TOKEN = os.environ.get("SENTRY_API_AUTH_TOKEN")
 if not SENTRY_API_AUTH_TOKEN:
-    raise ValueError("Please set the SENTRY_API_AUTH_TOKEN environment variable")
+    raise ValueError("Please set the SENTRY_API_AUTH_TOKEN environment variable. (See README.md)")
 
 REFERRER = os.environ.get("REFERRER", "zentry")
 TIME_PERIOD_IN_DAYS = 1
@@ -292,10 +292,24 @@ async def get_database_state(org_slug, project_id, environment, preview_time_per
 
 async def get_data():
     org_slug = os.environ.get("SENTRY_ORG_SLUG")
+    if not org_slug:
+        raise ValueError("Please set the SENTRY_ORG_SLUG environment variable. (See README.md)")
+    
     frontend_id = os.environ.get("SENTRY_FRONTEND_PROJECT_ID")
+    if not frontend_id:
+        raise ValueError("Please set the SENTRY_FRONTEND_PROJECT_ID environment variable. (See README.md)")
+    
     frontend_env = os.environ.get("SENTRY_FRONTEND_ENVIRONMENT")
+    if not frontend_env:
+        raise ValueError("Please set the SENTRY_FRONTEND_ENVIRONMENT environment variable. (See README.md)")
+    
     backend_id = os.environ.get("SENTRY_BACKEND_PROJECT_ID")
+    if not backend_id:
+        raise ValueError("Please set the SENTRY_BACKEND_PROJECT_ID environment variable. (See README.md)")
+    
     backend_env = os.environ.get("SENTRY_BACKEND_ENVIRONMENT")
+    if not backend_env:
+        raise ValueError("Please set the SENTRY_BACKEND_ENVIRONMENT environment variable. (See README.md)")
 
     data = {}
 
