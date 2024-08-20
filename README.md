@@ -8,9 +8,14 @@ Build by [Anton Pirker](https://github.com/antonpirker) during Sentry Hackweek 2
 
 The app excepts the following environment variables to be set:
 
+    
 - `SENTRY_API_AUTH_TOKEN`
 
     The User Auth Token that is used for connecting to the Sentry API. In Sentry.io click on your name in the top left corner and go to "User Settings" > "User Auth Tokens".
+
+- `SENTRY_ORG_SLUG`
+
+    The slug of the Sentry organization you want to retrieve data from. 
 
 - `SENTRY_BACKEND_PROJECT_ID`
 
