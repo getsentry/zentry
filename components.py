@@ -1,6 +1,6 @@
 from fasthtml.common import *
 
-from utils import fmt_duration, fmt_percentage, fmt_percentage_signed, fmt_round_2
+from utils import fmt_duration, fmt_percentage, fmt_percentage_signed, fmt_round_2, get_score
 
 
 SQL_KEYWORDS = [
@@ -28,7 +28,7 @@ def metric(title, id, value, value_prev, score, formatter=lambda x: x):
         Div(title, cls='header'),
         Div(formatter(value), cls='value'),
         Div(fmt_percentage_signed(change), cls=f'change {"up" if change >=0 else "down"}'),
-        Div(score, cls='score meh'),
+        Div(score, cls=f'score {score.lower()}'),
         id=id,
         cls="metric",
     )
@@ -77,7 +77,7 @@ async def frontend_state(data=None, data_prev=None):
                 id="ttfb",
                 value=data["ttfb"],
                 value_prev=data_prev["ttfb"],
-                score="TODO",
+                score=get_score("ttfb", data["ttfb"]),
                 formatter=fmt_duration,
             ),
             metric(
@@ -85,7 +85,7 @@ async def frontend_state(data=None, data_prev=None):
                 id="fcp",
                 value=data["fcp"],
                 value_prev=data_prev["fcp"],
-                score="TODO",
+                score=get_score("fcp", data["fcp"]),
                 formatter=fmt_duration,
             ),
             metric(
@@ -93,7 +93,8 @@ async def frontend_state(data=None, data_prev=None):
                 id="inp",
                 value=data["inp"],
                 value_prev=data_prev["inp"],
-                score="TODO",
+                score=get_score("inp", data["inp"]),
+                formatter=fmt_duration,
             ),
             cls="body",
         ),
@@ -121,7 +122,7 @@ async def backend_state(data=None, data_prev=None):
                 id="failure-rate",
                 value=data["failure_rate"],
                 value_prev=data_prev["failure_rate"],
-                score="TODO",
+                score=get_score("backend_failure_rate", data["failure_rate"]),
                 formatter=fmt_percentage,
             ),
             metric(
@@ -129,7 +130,7 @@ async def backend_state(data=None, data_prev=None):
                 id="apdex",
                 value=data["apdex"],
                 value_prev=data_prev["apdex"],
-                score="TODO",
+                score=get_score("inverse_apdex", 1-data["apdex"]),
                 formatter=fmt_round_2,
             ),
             cls="body",
@@ -170,7 +171,7 @@ async def requests_state(title, id, data=None, data_prev=None):
                 id="time_avg",
                 value=failure_rate,
                 value_prev=failure_rate_prev,
-                score="TODO",
+                score=get_score("http_failure_rate", failure_rate),
                 formatter=fmt_percentage,
             ),
             metric(
@@ -178,7 +179,7 @@ async def requests_state(title, id, data=None, data_prev=None):
                 id="time_avg",
                 value=data["time_avg"],
                 value_prev=data_prev["time_avg"],
-                score="TODO",
+                score=get_score("http_avg_duration", data["time_avg"]),
                 formatter=fmt_duration,
             ),
             cls="body",
@@ -224,7 +225,7 @@ async def cache_state(data=None, data_prev=None):
             id="cahe_hit_rate",
             value=1 - data["miss_rate"],
             value_prev=1 - data_prev["miss_rate"],
-            score="TODO",
+            score=get_score("cache_miss_rate", data["miss_rate"]),
             formatter=fmt_percentage,
         ),
         id="cache",
@@ -259,7 +260,7 @@ async def queue_state(data=None, data_prev=None):
                 id="processing_time_avg",
                 value=data["processing_time_avg"],
                 value_prev=data_prev["processing_time_avg"],
-                score="TODO",
+                score=get_score("queue_avg_processing", data["processing_time_avg"]),
                 formatter=fmt_duration,
             ),
             metric(
@@ -267,7 +268,7 @@ async def queue_state(data=None, data_prev=None):
                 id="time_in_queue_avg",
                 value=data["time_in_queue_avg"],
                 value_prev=data_prev["time_in_queue_avg"],
-                score="TODO",
+                score=get_score("queue_avg_time_in_queue", data["time_in_queue_avg"]),
                 formatter=fmt_duration,
             ),
             cls="body",

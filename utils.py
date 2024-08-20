@@ -1,3 +1,31 @@
+THRESHOLDS = {
+    "ttfb": [200, 400],
+    "fcp": [1000, 3000],
+    "inp": [200, 400],
+    "http_failure_rate": [0.02, 0.05],
+    "http_avg_duration": [800, 1500],
+    "backend_failure_rate": [0.02, 0.05],
+    "inverse_apdex": [0.1, 0.3],
+    "cache_miss_rate": [0.1, 0.3],
+    "queue_avg_processing": [200, 800],
+    "queue_avg_time_in_queue": [200, 800],
+}
+
+
+def get_score(metric, value):
+    thresholds = THRESHOLDS.get(metric)
+    if not thresholds:
+        return None
+
+    if value < thresholds[0]:
+        return "Good"
+
+    if value >= thresholds[0] and value < thresholds[1]:
+        return "Meh"
+
+    return "Poor"
+
+
 def fmt_percentage(value):
     return f"{value:.1%}"
 
