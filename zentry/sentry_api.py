@@ -1,20 +1,67 @@
 import datetime
 import os
+from aiohttp_client_cache import CachedSession, RedisBackend
 
 
-SENTRY_API_BASE_URL = os.environ.get("SENTRY_API_BASE_URL", "https://sentry.io/api/0")
+TIME_PERIOD_IN_DAYS = 3
+REFERRER = os.environ.get("REFERRER", "zentry")
+API_BASE_URL = os.environ.get("SENTRY_API_BASE_URL", "https://sentry.io/api/0")
+REDIS_URL = os.environ.get("ZENTRY_REDIS_URL", "redis://localhost:6379")
 
-SENTRY_API_AUTH_TOKEN = os.environ.get("SENTRY_API_AUTH_TOKEN")
-if not SENTRY_API_AUTH_TOKEN:
+API_AUTH_TOKEN = os.environ.get("SENTRY_API_AUTH_TOKEN")
+if not API_AUTH_TOKEN:
     raise ValueError(
-        "Please set the SENTRY_API_AUTH_TOKEN environment variable. (See README.md)"
+        "Please set the SENTRY_API_AUTH_TOKEN environment variable. (See https://github.com/getsentry/zentry/blob/main/README.md)"
     )
 
-REFERRER = os.environ.get("REFERRER", "zentry")
-TIME_PERIOD_IN_DAYS = 3
+ORG_SLUG = os.environ.get("SENTRY_ORG_SLUG")
+if not ORG_SLUG:
+    raise ValueError(
+        "Please set the SENTRY_ORG_SLUG environment variable. (See https://github.com/getsentry/zentry/blob/main/README.md)"
+    )
+
+FRONTEND_ID = os.environ.get("SENTRY_FRONTEND_PROJECT_ID")
+if not FRONTEND_ID:
+    raise ValueError(
+        "Please set the SENTRY_FRONTEND_PROJECT_ID environment variable. (See https://github.com/getsentry/zentry/blob/main/README.md)"
+    )
+
+FRONTEND_ENV = os.environ.get("SENTRY_FRONTEND_ENVIRONMENT")
+if not FRONTEND_ENV:
+    raise ValueError(
+        "Please set the SENTRY_FRONTEND_ENVIRONMENT environment variable. (See https://github.com/getsentry/zentry/blob/main/README.md)"
+    )
+
+BACKEND_ID = os.environ.get("SENTRY_BACKEND_PROJECT_ID")
+if not BACKEND_ID:
+    raise ValueError(
+        "Please set the SENTRY_BACKEND_PROJECT_ID environment variable. (See https://github.com/getsentry/zentry/blob/main/README.md)"
+    )
+
+BACKEND_ENV = os.environ.get("SENTRY_BACKEND_ENVIRONMENT")
+if not BACKEND_ENV:
+    raise ValueError(
+        "Please set the SENTRY_BACKEND_ENVIRONMENT environment variable. (See https://github.com/getsentry/zentry/blob/main/README.md)"
+    )
 
 
-client = None
+org_data = None
+cache_backend = None
+
+
+async def init():
+    global cache_backend
+    cache_backend = RedisBackend(
+        cache_name="zentry_http_cache",
+        address=REDIS_URL,
+        expire_after=60 * 60,
+        allowed_codes=(200,),
+        allowed_methods=("GET",),
+        include_headers=True,
+    )
+
+    global org_data
+    org_data = await get_org_data()
 
 
 def _get_time_period(preview_time_period):
@@ -35,8 +82,8 @@ def _get_time_period(preview_time_period):
 
 
 async def _make_api_request(path, params={}, preview_time_period=False):
-    url = SENTRY_API_BASE_URL + path
-    headers = {"Authorization": f"Bearer {SENTRY_API_AUTH_TOKEN}"}
+    url = API_BASE_URL + path
+    headers = {"Authorization": f"Bearer {API_AUTH_TOKEN}"}
 
     start, end = _get_time_period(preview_time_period)
 
@@ -49,8 +96,9 @@ async def _make_api_request(path, params={}, preview_time_period=False):
     combined_params.update(base_params)
     combined_params.update(params)
 
-    async with client.get(url, headers=headers, params=combined_params) as response:
-        return await response.json()
+    async with CachedSession(cache=cache_backend) as client:
+        async with client.get(url, headers=headers, params=combined_params) as response:
+            return await response.json()
 
 
 async def get_frontend_state(
@@ -304,50 +352,46 @@ async def get_database_state(
 
 async def get_project_data(org_slug, project_id):
     path = f"/projects/{org_slug}/{project_id}/"
-    url = SENTRY_API_BASE_URL + path
-    headers = {"Authorization": f"Bearer {SENTRY_API_AUTH_TOKEN}"}
+    url = API_BASE_URL + path
+    headers = {"Authorization": f"Bearer {API_AUTH_TOKEN}"}
 
-    async with client.get(url, headers=headers) as response:
-        project_data = await response.json()
+    async with CachedSession(cache=cache_backend) as client:
+        async with client.get(url, headers=headers) as response:
+            project_data = await response.json()
 
     return project_data
 
 
+async def get_org_data():
+    frontend_project_data = await get_project_data(ORG_SLUG, FRONTEND_ID)
+    backend_project_data = await get_project_data(ORG_SLUG, BACKEND_ID)
+
+    if (
+        frontend_project_data["organization"]["name"]
+        == backend_project_data["organization"]["name"]
+    ):
+        org_name = frontend_project_data["organization"]["name"]
+    else:
+        org_name = f"{frontend_project_data['organization']['name']} / {backend_project_data['organization']['name']}"
+
+    data = {
+        "name": org_name,
+        "frontend_id": FRONTEND_ID,
+        "frontend_url": frontend_project_data["organization"]["links"][
+            "organizationUrl"
+        ],
+        "backend_id": BACKEND_ID,
+        "backend_url": backend_project_data["organization"]["links"]["organizationUrl"],
+    }
+
+    return data
+
+
 async def get_data():
-    org_slug = os.environ.get("SENTRY_ORG_SLUG")
-    if not org_slug:
-        raise ValueError(
-            "Please set the SENTRY_ORG_SLUG environment variable. (See README.md)"
-        )
-
-    frontend_id = os.environ.get("SENTRY_FRONTEND_PROJECT_ID")
-    if not frontend_id:
-        raise ValueError(
-            "Please set the SENTRY_FRONTEND_PROJECT_ID environment variable. (See README.md)"
-        )
-
-    frontend_env = os.environ.get("SENTRY_FRONTEND_ENVIRONMENT")
-    if not frontend_env:
-        raise ValueError(
-            "Please set the SENTRY_FRONTEND_ENVIRONMENT environment variable. (See README.md)"
-        )
-
-    backend_id = os.environ.get("SENTRY_BACKEND_PROJECT_ID")
-    if not backend_id:
-        raise ValueError(
-            "Please set the SENTRY_BACKEND_PROJECT_ID environment variable. (See README.md)"
-        )
-
-    backend_env = os.environ.get("SENTRY_BACKEND_ENVIRONMENT")
-    if not backend_env:
-        raise ValueError(
-            "Please set the SENTRY_BACKEND_ENVIRONMENT environment variable. (See README.md)"
-        )
-
     data = {}
 
-    frontend_project_data = await get_project_data(org_slug, frontend_id)
-    backend_project_data = await get_project_data(org_slug, backend_id)
+    frontend_project_data = await get_project_data(ORG_SLUG, FRONTEND_ID)
+    backend_project_data = await get_project_data(ORG_SLUG, BACKEND_ID)
 
     if (
         frontend_project_data["organization"]["name"]
@@ -359,90 +403,78 @@ async def get_data():
 
     data["org"] = {
         "name": org_name,
-        "frontend_id": frontend_id,
+        "frontend_id": FRONTEND_ID,
         "frontend_url": frontend_project_data["organization"]["links"][
             "organizationUrl"
         ],
-        "backend_id": backend_id,
+        "backend_id": BACKEND_ID,
         "backend_url": backend_project_data["organization"]["links"]["organizationUrl"],
     }
 
-    data["frontend"] = await get_frontend_state(
-        org_slug=org_slug,
-        project_id=frontend_id,
-        environment=frontend_env,
-    )
-    data["frontend_prev"] = await get_frontend_state(
-        org_slug=org_slug,
-        project_id=frontend_id,
-        environment=frontend_env,
-        preview_time_period=True,
-    )
-
     data["frontend_requests"] = await get_requests_state(
-        org_slug=org_slug,
-        project_id=frontend_id,
-        environment=frontend_env,
+        org_slug=ORG_SLUG,
+        project_id=FRONTEND_ID,
+        environment=FRONTEND_ENV,
     )
     data["frontend_requests_prev"] = await get_requests_state(
-        org_slug=org_slug,
-        project_id=frontend_id,
-        environment=frontend_env,
+        org_slug=ORG_SLUG,
+        project_id=FRONTEND_ID,
+        environment=FRONTEND_ENV,
         preview_time_period=True,
     )
 
     data["backend"] = await get_backend_state(
-        org_slug=org_slug,
-        project_id=backend_id,
-        environment=backend_env,
+        org_slug=ORG_SLUG,
+        project_id=BACKEND_ID,
+        environment=BACKEND_ENV,
     )
     data["backend_prev"] = await get_backend_state(
-        org_slug=org_slug,
-        project_id=backend_id,
-        environment=backend_env,
+        org_slug=ORG_SLUG,
+        project_id=BACKEND_ID,
+        environment=BACKEND_ENV,
         preview_time_period=True,
     )
 
     data["backend_requests"] = await get_requests_state(
-        org_slug=org_slug,
-        project_id=backend_id,
-        environment=backend_env,
+        org_slug=ORG_SLUG,
+        project_id=BACKEND_ID,
+        environment=BACKEND_ENV,
     )
     data["backend_requests_prev"] = await get_requests_state(
-        org_slug=org_slug,
-        project_id=backend_id,
-        environment=backend_env,
+        org_slug=ORG_SLUG,
+        project_id=BACKEND_ID,
+        environment=BACKEND_ENV,
         preview_time_period=True,
     )
 
     data["cache"] = await get_cache_state(
-        org_slug=org_slug,
-        project_id=backend_id,
-        environment=backend_env,
+        org_slug=ORG_SLUG,
+        project_id=BACKEND_ID,
+        environment=BACKEND_ENV,
     )
     data["cache_prev"] = await get_cache_state(
-        org_slug=org_slug,
-        project_id=backend_id,
-        environment=backend_env,
+        org_slug=ORG_SLUG,
+        project_id=BACKEND_ID,
+        environment=BACKEND_ENV,
         preview_time_period=True,
     )
 
     data["queue"] = await get_queue_state(
-        org_slug=org_slug,
-        project_id=backend_id,
-        environment=backend_env,
+        org_slug=ORG_SLUG,
+        project_id=BACKEND_ID,
+        environment=BACKEND_ENV,
     )
     data["queue_prev"] = await get_queue_state(
-        org_slug=org_slug,
-        project_id=backend_id,
-        environment=backend_env,
+        org_slug=ORG_SLUG,
+        project_id=BACKEND_ID,
+        environment=BACKEND_ENV,
         preview_time_period=True,
     )
 
     data["database"] = await get_database_state(
-        org_slug=org_slug,
-        project_id=backend_id,
-        environment=backend_env,
+        org_slug=ORG_SLUG,
+        project_id=BACKEND_ID,
+        environment=BACKEND_ENV,
     )
 
     return data

@@ -1,4 +1,5 @@
 from fasthtml.common import *
+import sentry_api
 from utils import (
     fmt_duration,
     fmt_percentage,
@@ -67,15 +68,44 @@ def query(query, id, cls="row query"):
     )
 
 
-async def frontend_state(data=None, data_prev=None, org_data=None):
+async def frontend_state(data=None, data_prev=None, org_data=None, loading=False):
     header = H2(
-        "Frotend",
+        "Frontend",
         A(
             "⌕",
             href=f'{org_data["frontend_url"]}/insights/browser/pageloads/?project={org_data["frontend_id"]}',
             target="_blank",
         ),
     )
+
+    # If desired render loading state
+    if loading:
+        return Div(
+            header,
+            Div(
+                P("One moment please, loading data..."),
+                cls="body",
+            ),
+            hx_get="/frontend_state",
+            hx_trigger="load",
+            hx_swap="outerHTML",
+            cls="card",
+        )
+
+    # Load data
+    data = await sentry_api.get_frontend_state(
+        org_slug=sentry_api.ORG_SLUG,
+        project_id=sentry_api.FRONTEND_ID,
+        environment=sentry_api.FRONTEND_ENV,
+    )
+    data_prev = await sentry_api.get_frontend_state(
+        org_slug=sentry_api.ORG_SLUG,
+        project_id=sentry_api.FRONTEND_ID,
+        environment=sentry_api.FRONTEND_ENV,
+        preview_time_period=True,
+    )
+
+    # If no data, render no data state
     if not data:
         return Div(
             header,
@@ -86,6 +116,7 @@ async def frontend_state(data=None, data_prev=None, org_data=None):
             cls="card",
         )
 
+    # Render the frontend state
     return Div(
         header,
         Div(
