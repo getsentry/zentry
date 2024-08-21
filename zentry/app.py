@@ -1,9 +1,6 @@
 import os
-
 from aiohttp_client_cache import CachedSession, RedisBackend
-
 from fasthtml.common import *
-
 import sentry_api
 import sentry_sdk
 
@@ -20,33 +17,29 @@ from components import (
 
 REDIS_URL = os.environ.get("ZENTRY_REDIS_URL", "redis://localhost:6379")
 
+
 sentry_sdk.init(
     dsn=os.environ.get("SENTRY_DSN"),
     traces_sample_rate=1.0,
     # debug=True,
 )
 
-app, rt = fast_app(
-    pico=False,
-    hdrs=(
-        Link(rel="stylesheet", href="assets/rest.css", type="text/css"),
-        Link(rel="stylesheet", href="assets/zentry.css", type="text/css"),
-        MarkdownJS(),
-        Link(
-            rel="icon",
-            type="image/png",
-            href="https://s1.sentry-cdn.com/_static/0c41bcfa548dfc7d27d582cd94b34af7/sentry/images/favicon.png",
-        ),
+headers = (
+    Link(rel="stylesheet", href="assets/rest.css", type="text/css"),
+    Link(rel="stylesheet", href="assets/zentry.css", type="text/css"),
+    MarkdownJS(),
+    Link(
+        rel="icon",
+        type="image/png",
+        href="https://s1.sentry-cdn.com/_static/0c41bcfa548dfc7d27d582cd94b34af7/sentry/images/favicon.png",
     ),
 )
 
 
-async def header(title):
-    return Div(
-        Li(A("Issues", href="/"), A("State of the System", href="/state")),
-        Titled(title),
-        id="header",
-    )
+app, rt = fast_app(
+    pico=False,
+    hdrs=headers,
+)
 
 
 @app.get("/")
@@ -66,7 +59,10 @@ async def index():
         if sentry_api.TIME_PERIOD_IN_DAYS == 1:
             tagline = Div(f"Today (until now), compared to yesterday.", cls="tagline")
         else:
-            tagline = Div(f"The last {sentry_api.TIME_PERIOD_IN_DAYS} days, compared to the {sentry_api.TIME_PERIOD_IN_DAYS} days before.", cls="tagline")
+            tagline = Div(
+                f"The last {sentry_api.TIME_PERIOD_IN_DAYS} days, compared to the {sentry_api.TIME_PERIOD_IN_DAYS} days before.",
+                cls="tagline",
+            )
 
         return Title("Zentry"), Div(
             Div(

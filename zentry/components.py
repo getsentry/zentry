@@ -1,5 +1,4 @@
 from fasthtml.common import *
-
 from utils import (
     fmt_duration,
     fmt_percentage,

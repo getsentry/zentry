@@ -1,6 +1,7 @@
 import datetime
 import os
 
+
 SENTRY_API_BASE_URL = os.environ.get("SENTRY_API_BASE_URL", "https://sentry.io/api/0")
 
 SENTRY_API_AUTH_TOKEN = os.environ.get("SENTRY_API_AUTH_TOKEN")
@@ -11,6 +12,7 @@ if not SENTRY_API_AUTH_TOKEN:
 
 REFERRER = os.environ.get("REFERRER", "zentry")
 TIME_PERIOD_IN_DAYS = 3
+
 
 client = None
 
