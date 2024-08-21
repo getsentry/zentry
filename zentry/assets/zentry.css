@@ -156,7 +156,7 @@ h1 {
   border-bottom-width: 0.833333px;
 }
 .card h2 a {
-  float: right; 
+  float: right;
   margin-top: -0.15em;
 }
 
@@ -165,7 +165,7 @@ h1 {
   justify-content: space-evenly;
 }
 
-.card .body .no-data-msg, 
+.card .body .no-data-msg,
 .card .body .loading-msg {
   margin-top: 4em;
 }
