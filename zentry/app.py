@@ -39,6 +39,20 @@ app, rt = fast_app(
 )
 
 
+@app.get("/frontend_requests_state")
+async def get_frontend_requests_state():
+    return await frontend_requests_state(
+        org_data=sentry_api.org_data,
+    )
+
+
+@app.get("/backend_requests_state")
+async def get_backend_requests_state():
+    return await backend_requests_state(
+        org_data=sentry_api.org_data,
+    )
+
+
 @app.get("/frontend_state")
 async def get_frontend_state():
     return await frontend_state(
@@ -99,9 +113,8 @@ async def index():
                     # Frontend Outbound Requests
                     Div(
                         await frontend_requests_state(
-                            data["frontend_requests"],
-                            data["frontend_requests_prev"],
-                            data["org"],
+                            org_data=sentry_api.org_data,
+                            loading=True,
                         ),
                     ),
                     Div(Span("↔"), cls="grid-cell-arrow"),
@@ -110,9 +123,8 @@ async def index():
                     # Backend Outbound Requests
                     Div(
                         await backend_requests_state(
-                            data["backend_requests"],
-                            data["backend_requests_prev"],
-                            data["org"],
+                            org_data=sentry_api.org_data,
+                            loading=True,
                         ),
                     ),
                     Div(Span("↔"), cls="grid-cell-arrow"),

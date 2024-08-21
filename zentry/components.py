@@ -226,7 +226,7 @@ async def backend_state(org_data=None, loading=False):
     )
 
 
-async def requests_state(title, id, data=None, data_prev=None, org_data=None):
+async def requests_state(title, id, org_data=None, loading=False):
     header = H2(
         title,
         A(
@@ -236,6 +236,53 @@ async def requests_state(title, id, data=None, data_prev=None, org_data=None):
         ),
     )
 
+    is_frontend = "frontend" in id
+    if is_frontend:
+        route = "/frontend_requests_state"
+    else:
+        route = "/backend_requests_state"
+
+    # If desired render loading state
+    if loading:
+        return Div(
+            header,
+            Div(
+                P("One moment please, loading data..."),
+                cls="body",
+            ),
+            hx_get=route,
+            hx_trigger="load",
+            hx_swap="outerHTML",
+            cls="card",
+        )
+
+    # Load data
+    if is_frontend:
+        data = await sentry_api.get_requests_state(
+            org_slug=sentry_api.ORG_SLUG,
+            project_id=sentry_api.FRONTEND_ID,
+            environment=sentry_api.FRONTEND_ENV,
+        )
+        data_prev = await sentry_api.get_requests_state(
+            org_slug=sentry_api.ORG_SLUG,
+            project_id=sentry_api.FRONTEND_ID,
+            environment=sentry_api.FRONTEND_ENV,
+            preview_time_period=True,
+        )
+    else:
+        data = await sentry_api.get_requests_state(
+            org_slug=sentry_api.ORG_SLUG,
+            project_id=sentry_api.BACKEND_ID,
+            environment=sentry_api.BACKEND_ENV,
+        )
+        data_prev = await sentry_api.get_requests_state(
+            org_slug=sentry_api.ORG_SLUG,
+            project_id=sentry_api.BACKEND_ID,
+            environment=sentry_api.BACKEND_ENV,
+            preview_time_period=True,
+        )
+
+    # If no data, render no data state
     if not data:
         return Div(
             header,
@@ -246,6 +293,7 @@ async def requests_state(title, id, data=None, data_prev=None, org_data=None):
             cls="card",
         )
 
+    # Render the requests state
     failure_rate = (
         data["response_rate_3xx"]
         + data["response_rate_4xx"]
@@ -284,23 +332,21 @@ async def requests_state(title, id, data=None, data_prev=None, org_data=None):
     )
 
 
-async def frontend_requests_state(data=None, data_prev=None, org_data=None):
+async def frontend_requests_state(org_data=None, loading=False):
     return await requests_state(
         "Outbound API Requests",
         "frontend-outbound-requests",
-        data,
-        data_prev,
         {"url": org_data["frontend_url"], "id": org_data["frontend_id"]},
+        loading=loading,
     )
 
 
-async def backend_requests_state(data=None, data_prev=None, org_data=None):
+async def backend_requests_state(org_data=None, loading=False):
     return await requests_state(
         "Outbound API Requests",
         "backend-outbound-requests",
-        data,
-        data_prev,
         {"url": org_data["backend_url"], "id": org_data["backend_id"]},
+        loading=loading,
     )
 
 

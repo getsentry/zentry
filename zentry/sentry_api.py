@@ -415,34 +415,4 @@ async def get_data():
         "backend_url": backend_project_data["organization"]["links"]["organizationUrl"],
     }
 
-    data["frontend_requests"] = await get_requests_state(
-        org_slug=ORG_SLUG,
-        project_id=FRONTEND_ID,
-        environment=FRONTEND_ENV,
-    )
-    data["frontend_requests_prev"] = await get_requests_state(
-        org_slug=ORG_SLUG,
-        project_id=FRONTEND_ID,
-        environment=FRONTEND_ENV,
-        preview_time_period=True,
-    )
-
-    data["backend_requests"] = await get_requests_state(
-        org_slug=ORG_SLUG,
-        project_id=BACKEND_ID,
-        environment=BACKEND_ENV,
-    )
-    data["backend_requests_prev"] = await get_requests_state(
-        org_slug=ORG_SLUG,
-        project_id=BACKEND_ID,
-        environment=BACKEND_ENV,
-        preview_time_period=True,
-    )
-
-    data["database"] = await get_database_state(
-        org_slug=ORG_SLUG,
-        project_id=BACKEND_ID,
-        environment=BACKEND_ENV,
-    )
-
     return data
