@@ -7,7 +7,7 @@ import sentry_sdk
 from components import (
     backend_requests_state,
     backend_state,
-    cache_state,
+    caches_state,
     database_state,
     footer,
     frontend_requests_state,
@@ -49,6 +49,13 @@ async def get_frontend_state():
 @app.get("/backend_state")
 async def get_backend_state():
     return await backend_state(
+        org_data=sentry_api.org_data,
+    )
+
+
+@app.get("/caches_state")
+async def get_caches_state():
+    return await caches_state(
         org_data=sentry_api.org_data,
     )
 
@@ -137,8 +144,9 @@ async def index():
                     Div(Span("↕"), cls="grid-cell-arrow"),
                     # Caches
                     Div(
-                        await cache_state(
-                            data["cache"], data["cache_prev"], data["org"]
+                        await caches_state(
+                            org_data=sentry_api.org_data,
+                            loading=True,
                         ),
                     ),
                     # Queues

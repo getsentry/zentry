@@ -224,7 +224,9 @@ async def get_requests_state(
     return clean_data
 
 
-async def get_cache_state(org_slug, project_id, environment, preview_time_period=False):
+async def get_caches_state(
+    org_slug, project_id, environment, preview_time_period=False
+):
     response = await _make_api_request(
         path=f"/organizations/{org_slug}/events/",
         params={
@@ -431,18 +433,6 @@ async def get_data():
         environment=BACKEND_ENV,
     )
     data["backend_requests_prev"] = await get_requests_state(
-        org_slug=ORG_SLUG,
-        project_id=BACKEND_ID,
-        environment=BACKEND_ENV,
-        preview_time_period=True,
-    )
-
-    data["cache"] = await get_cache_state(
-        org_slug=ORG_SLUG,
-        project_id=BACKEND_ID,
-        environment=BACKEND_ENV,
-    )
-    data["cache_prev"] = await get_cache_state(
         org_slug=ORG_SLUG,
         project_id=BACKEND_ID,
         environment=BACKEND_ENV,
