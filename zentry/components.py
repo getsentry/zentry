@@ -421,7 +421,48 @@ async def queues_state(org_data=None, loading=False):
     )
 
 
-async def database_state(data=None, org_data=None):
+async def database_state(org_data=None, loading=False):
+    header = H2(
+        "Database",
+        A(
+            "⌕",
+            href=f'{org_data["backend_url"]}/insights/database/?project={org_data["backend_id"]}',
+            target="_blank",
+        ),
+    )
+
+    if loading:
+        return Div(
+            header,
+            Div(
+                P("One moment please, loading data..."),
+                cls="body",
+            ),
+            hx_get="/database_state",
+            hx_trigger="load",
+            hx_swap="outerHTML",
+            cls="card",
+        )
+
+    # Load data
+    data = await sentry_api.get_database_state(
+        org_slug=sentry_api.ORG_SLUG,
+        project_id=sentry_api.BACKEND_ID,
+        environment=sentry_api.BACKEND_ENV,
+    )
+
+    # If no data, render no data state
+    if len(data) == 0:
+        return Div(
+            header,
+            Div(
+                P("No data available"),
+                cls="body",
+            ),
+            cls="card",
+        )
+
+    # Render the database state
     output = []
     for item in data:
         output += [
@@ -443,15 +484,6 @@ async def database_state(data=None, org_data=None):
                 cls="row right",
             ),
         ]
-
-    header = H2(
-        "Database",
-        A(
-            "⌕",
-            href=f'{org_data["backend_url"]}/insights/database/?project={org_data["backend_id"]}',
-            target="_blank",
-        ),
-    )
 
     return Div(
         header,

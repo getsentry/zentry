@@ -60,6 +60,13 @@ async def get_queues_state():
     )
 
 
+@app.get("/database_state")
+async def get_database_state():
+    return await database_state(
+        org_data=sentry_api.org_data,
+    )
+
+
 @app.get("/")
 async def index():
     await sentry_api.init()
@@ -148,7 +155,10 @@ async def index():
                 Div(
                     # Database
                     Div(
-                        await database_state(data["database"], data["org"]),
+                        await database_state(
+                            org_data=sentry_api.org_data,
+                            loading=True,
+                        ),
                     ),
                     cls="grid-right-single",
                 ),
