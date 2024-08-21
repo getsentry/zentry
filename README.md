@@ -1,6 +1,8 @@
 # Zentry
 
-A Zen version of Sentry.
+A Zen version of Sentry. 
+
+Lets you see at a glance the areas in your system that need improvements.
 
 Built by [Anton Pirker](https://github.com/antonpirker) during Sentry Hackweek 2024.
 
