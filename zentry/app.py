@@ -44,6 +44,7 @@ app, rt = fast_app(
 
 @app.get("/")
 async def index():
+    # TODO: Check if there is a FastHTML hook on startup so this is only called on startup.
     await sentry_api.init()
 
     if sentry_api.TIME_PERIOD_IN_DAYS == 1:

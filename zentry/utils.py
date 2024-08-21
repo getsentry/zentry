@@ -1,4 +1,3 @@
-
 # Those are the thresholds that define if it is a good, meh, or poor value for each metric.
 THRESHOLDS = {
     "ttfb": [200, 400],
