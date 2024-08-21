@@ -389,30 +389,3 @@ async def get_org_data():
     }
 
     return data
-
-
-async def get_data():
-    data = {}
-
-    frontend_project_data = await get_project_data(ORG_SLUG, FRONTEND_ID)
-    backend_project_data = await get_project_data(ORG_SLUG, BACKEND_ID)
-
-    if (
-        frontend_project_data["organization"]["name"]
-        == backend_project_data["organization"]["name"]
-    ):
-        org_name = frontend_project_data["organization"]["name"]
-    else:
-        org_name = f"{frontend_project_data['organization']['name']} / {backend_project_data['organization']['name']}"
-
-    data["org"] = {
-        "name": org_name,
-        "frontend_id": FRONTEND_ID,
-        "frontend_url": frontend_project_data["organization"]["links"][
-            "organizationUrl"
-        ],
-        "backend_id": BACKEND_ID,
-        "backend_url": backend_project_data["organization"]["links"]["organizationUrl"],
-    }
-
-    return data

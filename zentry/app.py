@@ -91,7 +91,6 @@ async def get_database_state():
 @app.get("/")
 async def index():
     await sentry_api.init()
-    data = await sentry_api.get_data()
 
     if sentry_api.TIME_PERIOD_IN_DAYS == 1:
         tagline = Div(f"Today (until now), compared to yesterday.", cls="tagline")
@@ -103,7 +102,7 @@ async def index():
 
     return Title("Zentry"), Div(
         Div(
-            H1(data["org"]["name"]),
+            H1(sentry_api.org_data["name"]),
             tagline,
         ),
         Div(
