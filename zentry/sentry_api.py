@@ -10,7 +10,7 @@ if not SENTRY_API_AUTH_TOKEN:
     )
 
 REFERRER = os.environ.get("REFERRER", "zentry")
-TIME_PERIOD_IN_DAYS = 1
+TIME_PERIOD_IN_DAYS = 3
 
 client = None
 

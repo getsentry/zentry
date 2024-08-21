@@ -63,9 +63,15 @@ async def index():
         sentry_api.client = client
         data = await sentry_api.get_data()
 
+        if sentry_api.TIME_PERIOD_IN_DAYS == 1:
+            tagline = Div(f"Today (until now), compared to yesterday.", cls="tagline")
+        else:
+            tagline = Div(f"The last {sentry_api.TIME_PERIOD_IN_DAYS} days, compared to the {sentry_api.TIME_PERIOD_IN_DAYS} days before.", cls="tagline")
+
         return Title("Zentry"), Div(
             Div(
                 H1(data["org"]["name"]),
+                tagline,
             ),
             Div(
                 # Left side of grid
