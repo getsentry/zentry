@@ -90,7 +90,7 @@ def query(query, id, cls="row query"):
 def footer():
     return Div(
         P(
-            "Build by",
+            "Built by",
             A("Anton Pirker", href="https://github.com/antonpirker", target="_blank"),
             " during Sentry Hackweek 2024. ",
             A(

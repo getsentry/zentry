@@ -2,7 +2,7 @@
 
 A Zen version of Sentry.
 
-Build by [Anton Pirker](https://github.com/antonpirker) during Sentry Hackweek 2024.
+Built by [Anton Pirker](https://github.com/antonpirker) during Sentry Hackweek 2024.
 
 ## Prerequisites
 
