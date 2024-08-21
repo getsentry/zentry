@@ -12,7 +12,7 @@ from components import (
     footer,
     frontend_requests_state,
     frontend_state,
-    queue_state,
+    queues_state,
 )
 
 sentry_sdk.init(
@@ -49,6 +49,13 @@ async def get_frontend_state():
 @app.get("/backend_state")
 async def get_backend_state():
     return await backend_state(
+        org_data=sentry_api.org_data,
+    )
+
+
+@app.get("/queues_state")
+async def get_queues_state():
+    return await queues_state(
         org_data=sentry_api.org_data,
     )
 
@@ -129,8 +136,9 @@ async def index():
                     ),
                     # Queues
                     Div(
-                        await queue_state(
-                            data["queue"], data["queue_prev"], data["org"]
+                        await queues_state(
+                            org_data=sentry_api.org_data,
+                            loading=True,
                         ),
                     ),
                     Div(Span("↕"), cls="grid-cell-arrow"),

@@ -337,7 +337,7 @@ async def cache_state(data=None, data_prev=None, org_data=None):
     )
 
 
-async def queue_state(data=None, data_prev=None, org_data=None):
+async def queues_state(org_data=None, loading=False):
     header = H2(
         "Queues",
         A(
@@ -347,6 +347,34 @@ async def queue_state(data=None, data_prev=None, org_data=None):
         ),
     )
 
+    # If desired render loading state
+    if loading:
+        return Div(
+            header,
+            Div(
+                P("One moment please, loading data..."),
+                cls="body",
+            ),
+            hx_get="/queues_state",
+            hx_trigger="load",
+            hx_swap="outerHTML",
+            cls="card",
+        )
+
+    # Load data
+    data = await sentry_api.get_queues_state(
+        org_slug=sentry_api.ORG_SLUG,
+        project_id=sentry_api.BACKEND_ID,
+        environment=sentry_api.BACKEND_ENV,
+    )
+    data_prev = await sentry_api.get_queues_state(
+        org_slug=sentry_api.ORG_SLUG,
+        project_id=sentry_api.BACKEND_ID,
+        environment=sentry_api.BACKEND_ENV,
+        preview_time_period=True,
+    )
+
+    # If no data, render no data state
     if not data:
         return Div(
             header,
@@ -357,6 +385,7 @@ async def queue_state(data=None, data_prev=None, org_data=None):
             cls="card",
         )
 
+    # Render the queues state
     return Div(
         header,
         Div(
