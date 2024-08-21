@@ -423,18 +423,6 @@ async def get_data():
         preview_time_period=True,
     )
 
-    data["backend"] = await get_backend_state(
-        org_slug=ORG_SLUG,
-        project_id=BACKEND_ID,
-        environment=BACKEND_ENV,
-    )
-    data["backend_prev"] = await get_backend_state(
-        org_slug=ORG_SLUG,
-        project_id=BACKEND_ID,
-        environment=BACKEND_ENV,
-        preview_time_period=True,
-    )
-
     data["backend_requests"] = await get_requests_state(
         org_slug=ORG_SLUG,
         project_id=BACKEND_ID,

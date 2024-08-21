@@ -46,6 +46,13 @@ async def get_frontend_state():
     )
 
 
+@app.get("/backend_state")
+async def get_backend_state():
+    return await backend_state(
+        org_data=sentry_api.org_data,
+    )
+
+
 @app.get("/")
 async def index():
     await sentry_api.init()
@@ -105,7 +112,8 @@ async def index():
                     # Backend
                     Div(
                         await backend_state(
-                            data["backend"], data["backend_prev"], data["org"]
+                            org_data=sentry_api.org_data,
+                            loading=True,
                         ),
                     ),
                     cls="grid-right-single",
