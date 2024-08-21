@@ -223,7 +223,7 @@ h1 {
   border-top-style: solid;
   border-top-width: 0.833333px;
 }
-.metric .score.good {
+.metric .score.zen {
   color: var(--green300);
   background-color: var(--green100);
 }

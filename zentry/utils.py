@@ -19,7 +19,7 @@ def get_score(metric, value):
         return None
 
     if value < thresholds[0]:
-        return "Good"
+        return "Zen"
 
     if value >= thresholds[0] and value < thresholds[1]:
         return "Meh"
