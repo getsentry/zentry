@@ -101,7 +101,7 @@ async def _make_api_request(path, params={}, preview_time_period=False):
             return await response.json()
 
 
-async def get_frontend_state(
+async def get_frontend_status(
     org_slug, project_id, environment, preview_time_period=False
 ):
     response = await _make_api_request(
@@ -146,7 +146,7 @@ async def get_frontend_state(
     return clean_data
 
 
-async def get_backend_state(
+async def get_backend_status(
     org_slug, project_id, environment, preview_time_period=False
 ):
     response = await _make_api_request(
@@ -183,7 +183,7 @@ async def get_backend_state(
     return clean_data
 
 
-async def get_requests_state(
+async def get_requests_status(
     org_slug, project_id, environment, preview_time_period=False
 ):
     response = await _make_api_request(
@@ -224,7 +224,7 @@ async def get_requests_state(
     return clean_data
 
 
-async def get_caches_state(
+async def get_caches_status(
     org_slug, project_id, environment, preview_time_period=False
 ):
     response = await _make_api_request(
@@ -269,7 +269,7 @@ async def get_caches_state(
     return clean_data
 
 
-async def get_queues_state(
+async def get_queues_status(
     org_slug, project_id, environment, preview_time_period=False
 ):
     response = await _make_api_request(
@@ -312,7 +312,7 @@ async def get_queues_state(
     return clean_data
 
 
-async def get_database_state(
+async def get_database_status(
     org_slug, project_id, environment, preview_time_period=False
 ):
     response = await _make_api_request(

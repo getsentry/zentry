@@ -1,99 +1,15 @@
 from fasthtml.common import *
 import sentry_api
+from components.ui import loading_placeholder, no_data, metric, metric_simple, query
 from utils import (
     fmt_duration,
     fmt_percentage,
-    fmt_percentage_signed,
     fmt_round_2,
     get_score,
 )
 
 
-SQL_KEYWORDS = [
-    "AND",
-    "DELETE",
-    "FROM",
-    "LIMIT",
-    "OR",
-    "ORDER BY",
-    "SELECT",
-    "SET",
-    "UPDATE",
-    "WHERE",
-]
-
-
-def no_data(header):
-    return Div(
-        header,
-        Div(
-            Div("No data available.", cls="no-data-msg"),
-            cls="body",
-        ),
-        cls="card",
-    )
-
-
-def loading_placeholder(header, route):
-    return Div(
-        header,
-        Div(
-            Div("One moment please, loading data...", cls="loading-msg"),
-            cls="body",
-        ),
-        hx_get=route,
-        hx_trigger="load",
-        hx_swap="outerHTML",
-        cls="card",
-    )
-
-
-def metric(title, id, value, value_prev, score, formatter=lambda x: x):
-    """
-    The card representing one metric.
-    """
-    change = (value_prev - value) / value_prev
-
-    return Div(
-        Div(title, cls="header"),
-        Div(formatter(value), cls="value"),
-        Div(
-            fmt_percentage_signed(change),
-            cls=f'change {"up" if change >=0 else "down"}',
-        ),
-        Div(score, cls=f"score {score.lower()}"),
-        id=id,
-        cls="metric",
-    )
-
-
-def metric_simple(id, value, formatter=lambda x: x, cls="row"):
-    """
-    The card representing one metric in the databases list.
-    """
-    return Div(
-        Div(formatter(value), cls="value"),
-        id=id,
-        cls=cls,
-    )
-
-
-def query(query, id, cls="row query"):
-    """
-    Format the query in Markdown and then render the markdown.
-    This is why we need MarkdownJS in fast_app()
-    """
-    for keyword in SQL_KEYWORDS:
-        query = query.replace(keyword, f"**{keyword}**")
-
-    return Div(
-        Div(query, cls="marked"),
-        id=id,
-        cls=cls,
-    )
-
-
-async def frontend_state(org_data=None, loading=False):
+async def frontend_status(org_data=None, loading=False):
     header = H2(
         "Frontend",
         A(
@@ -105,15 +21,15 @@ async def frontend_state(org_data=None, loading=False):
 
     # If desired render loading state
     if loading:
-        return loading_placeholder(header, "/frontend_state")
+        return loading_placeholder(header, "/status/frontend")
 
     # Load data
-    data = await sentry_api.get_frontend_state(
+    data = await sentry_api.get_frontend_status(
         org_slug=sentry_api.ORG_SLUG,
         project_id=sentry_api.FRONTEND_ID,
         environment=sentry_api.FRONTEND_ENV,
     )
-    data_prev = await sentry_api.get_frontend_state(
+    data_prev = await sentry_api.get_frontend_status(
         org_slug=sentry_api.ORG_SLUG,
         project_id=sentry_api.FRONTEND_ID,
         environment=sentry_api.FRONTEND_ENV,
@@ -159,7 +75,7 @@ async def frontend_state(org_data=None, loading=False):
     )
 
 
-async def backend_state(org_data=None, loading=False):
+async def backend_status(org_data=None, loading=False):
     header = H2(
         "Backend",
         A(
@@ -171,15 +87,15 @@ async def backend_state(org_data=None, loading=False):
 
     # If desired render loading state
     if loading:
-        return loading_placeholder(header, "/backend_state")
+        return loading_placeholder(header, "/status/backend")
 
     # Load data
-    data = await sentry_api.get_backend_state(
+    data = await sentry_api.get_backend_status(
         org_slug=sentry_api.ORG_SLUG,
         project_id=sentry_api.FRONTEND_ID,
         environment=sentry_api.FRONTEND_ENV,
     )
-    data_prev = await sentry_api.get_backend_state(
+    data_prev = await sentry_api.get_backend_status(
         org_slug=sentry_api.ORG_SLUG,
         project_id=sentry_api.FRONTEND_ID,
         environment=sentry_api.FRONTEND_ENV,
@@ -217,7 +133,7 @@ async def backend_state(org_data=None, loading=False):
     )
 
 
-async def requests_state(title, id, org_data=None, loading=False):
+async def requests_status(title, id, org_data=None, loading=False):
     header = H2(
         title,
         A(
@@ -229,9 +145,9 @@ async def requests_state(title, id, org_data=None, loading=False):
 
     is_frontend = "frontend" in id
     if is_frontend:
-        route = "/frontend_requests_state"
+        route = "/status/frontend_requests"
     else:
-        route = "/backend_requests_state"
+        route = "/status/backend_requests"
 
     # If desired render loading state
     if loading:
@@ -239,24 +155,24 @@ async def requests_state(title, id, org_data=None, loading=False):
 
     # Load data
     if is_frontend:
-        data = await sentry_api.get_requests_state(
+        data = await sentry_api.get_requests_status(
             org_slug=sentry_api.ORG_SLUG,
             project_id=sentry_api.FRONTEND_ID,
             environment=sentry_api.FRONTEND_ENV,
         )
-        data_prev = await sentry_api.get_requests_state(
+        data_prev = await sentry_api.get_requests_status(
             org_slug=sentry_api.ORG_SLUG,
             project_id=sentry_api.FRONTEND_ID,
             environment=sentry_api.FRONTEND_ENV,
             preview_time_period=True,
         )
     else:
-        data = await sentry_api.get_requests_state(
+        data = await sentry_api.get_requests_status(
             org_slug=sentry_api.ORG_SLUG,
             project_id=sentry_api.BACKEND_ID,
             environment=sentry_api.BACKEND_ENV,
         )
-        data_prev = await sentry_api.get_requests_state(
+        data_prev = await sentry_api.get_requests_status(
             org_slug=sentry_api.ORG_SLUG,
             project_id=sentry_api.BACKEND_ID,
             environment=sentry_api.BACKEND_ENV,
@@ -306,8 +222,8 @@ async def requests_state(title, id, org_data=None, loading=False):
     )
 
 
-async def frontend_requests_state(org_data=None, loading=False):
-    return await requests_state(
+async def frontend_requests_status(org_data=None, loading=False):
+    return await requests_status(
         "Outbound API Requests",
         "frontend-outbound-requests",
         {"url": org_data["frontend_url"], "id": org_data["frontend_id"]},
@@ -315,8 +231,8 @@ async def frontend_requests_state(org_data=None, loading=False):
     )
 
 
-async def backend_requests_state(org_data=None, loading=False):
-    return await requests_state(
+async def backend_requests_status(org_data=None, loading=False):
+    return await requests_status(
         "Outbound API Requests",
         "backend-outbound-requests",
         {"url": org_data["backend_url"], "id": org_data["backend_id"]},
@@ -324,7 +240,7 @@ async def backend_requests_state(org_data=None, loading=False):
     )
 
 
-async def caches_state(org_data=None, loading=False):
+async def caches_status(org_data=None, loading=False):
     header = H2(
         "Caches",
         A(
@@ -336,15 +252,15 @@ async def caches_state(org_data=None, loading=False):
 
     # If desired render loading state
     if loading:
-        return loading_placeholder(header, "/caches_state")
+        return loading_placeholder(header, "/status/caches")
 
     # Load data
-    data = await sentry_api.get_caches_state(
+    data = await sentry_api.get_caches_status(
         org_slug=sentry_api.ORG_SLUG,
         project_id=sentry_api.BACKEND_ID,
         environment=sentry_api.BACKEND_ENV,
     )
-    data_prev = await sentry_api.get_caches_state(
+    data_prev = await sentry_api.get_caches_status(
         org_slug=sentry_api.ORG_SLUG,
         project_id=sentry_api.BACKEND_ID,
         environment=sentry_api.BACKEND_ENV,
@@ -370,7 +286,7 @@ async def caches_state(org_data=None, loading=False):
     )
 
 
-async def queues_state(org_data=None, loading=False):
+async def queues_status(org_data=None, loading=False):
     header = H2(
         "Queues",
         A(
@@ -382,15 +298,15 @@ async def queues_state(org_data=None, loading=False):
 
     # If desired render loading state
     if loading:
-        return loading_placeholder(header, "/queues_state")
+        return loading_placeholder(header, "/status/queues")
 
     # Load data
-    data = await sentry_api.get_queues_state(
+    data = await sentry_api.get_queues_status(
         org_slug=sentry_api.ORG_SLUG,
         project_id=sentry_api.BACKEND_ID,
         environment=sentry_api.BACKEND_ENV,
     )
-    data_prev = await sentry_api.get_queues_state(
+    data_prev = await sentry_api.get_queues_status(
         org_slug=sentry_api.ORG_SLUG,
         project_id=sentry_api.BACKEND_ID,
         environment=sentry_api.BACKEND_ENV,
@@ -437,7 +353,7 @@ async def queues_state(org_data=None, loading=False):
     )
 
 
-async def database_state(org_data=None, loading=False):
+async def database_status(org_data=None, loading=False):
     header = H2(
         "Database",
         A(
@@ -448,10 +364,10 @@ async def database_state(org_data=None, loading=False):
     )
 
     if loading:
-        return loading_placeholder(header, "/database_state")
+        return loading_placeholder(header, "/status/database")
 
     # Load data
-    data = await sentry_api.get_database_state(
+    data = await sentry_api.get_database_status(
         org_slug=sentry_api.ORG_SLUG,
         project_id=sentry_api.BACKEND_ID,
         environment=sentry_api.BACKEND_ENV,
@@ -501,26 +417,4 @@ async def database_state(org_data=None, loading=False):
         id="database",
         cls="card",
         style="min-height: 400px; height: unset;",
-    )
-
-
-def footer():
-    return Div(
-        P(
-            "Build by",
-            A("Anton Pirker", href="https://github.com/antonpirker", target="_blank"),
-            " during Sentry Hackweek 2024. ",
-            A(
-                "Source code",
-                href="https://github.com/getsentry/zentry",
-                target="_blank",
-            ),
-            style="margin-bottom: 2em;",
-        ),
-        A(
-            Img(src="/assets/img/sentry.png", alt="Sentry logo", cls="sentry-logo"),
-            href="https://sentry.io",
-            target="_blank",
-        ),
-        cls="footer",
     )

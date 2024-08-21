@@ -5,14 +5,14 @@ import sentry_api
 import sentry_sdk
 
 from components import (
-    backend_requests_state,
-    backend_state,
-    caches_state,
-    database_state,
+    backend_requests_status,
+    backend_status,
+    caches_status,
+    database_status,
     footer,
-    frontend_requests_state,
-    frontend_state,
-    queues_state,
+    frontend_requests_status,
+    frontend_status,
+    queues_status,
 )
 
 sentry_sdk.init(
@@ -39,51 +39,51 @@ app, rt = fast_app(
 )
 
 
-@app.get("/frontend_requests_state")
-async def get_frontend_requests_state():
-    return await frontend_requests_state(
+@app.get("/status/frontend_requests")
+async def get_frontend_requests_status():
+    return await frontend_requests_status(
         org_data=sentry_api.org_data,
     )
 
 
-@app.get("/backend_requests_state")
-async def get_backend_requests_state():
-    return await backend_requests_state(
+@app.get("/status/backend_requests")
+async def get_backend_requests_status():
+    return await backend_requests_status(
         org_data=sentry_api.org_data,
     )
 
 
-@app.get("/frontend_state")
-async def get_frontend_state():
-    return await frontend_state(
+@app.get("/status/frontend")
+async def get_frontend_status():
+    return await frontend_status(
         org_data=sentry_api.org_data,
     )
 
 
-@app.get("/backend_state")
-async def get_backend_state():
-    return await backend_state(
+@app.get("/status/backend")
+async def get_backend_status():
+    return await backend_status(
         org_data=sentry_api.org_data,
     )
 
 
-@app.get("/caches_state")
-async def get_caches_state():
-    return await caches_state(
+@app.get("/status/caches")
+async def get_caches_status():
+    return await caches_status(
         org_data=sentry_api.org_data,
     )
 
 
-@app.get("/queues_state")
-async def get_queues_state():
-    return await queues_state(
+@app.get("/status/queues")
+async def get_queues_status():
+    return await queues_status(
         org_data=sentry_api.org_data,
     )
 
 
-@app.get("/database_state")
-async def get_database_state():
-    return await database_state(
+@app.get("/status/database")
+async def get_database_status():
+    return await database_status(
         org_data=sentry_api.org_data,
     )
 
@@ -111,7 +111,7 @@ async def index():
                 Div(
                     # Frontend Outbound Requests
                     Div(
-                        await frontend_requests_state(
+                        await frontend_requests_status(
                             org_data=sentry_api.org_data,
                             loading=True,
                         ),
@@ -121,7 +121,7 @@ async def index():
                     Div(),
                     # Backend Outbound Requests
                     Div(
-                        await backend_requests_state(
+                        await backend_requests_status(
                             org_data=sentry_api.org_data,
                             loading=True,
                         ),
@@ -135,7 +135,7 @@ async def index():
                 Div(
                     # Frontend
                     Div(
-                        await frontend_state(
+                        await frontend_status(
                             org_data=sentry_api.org_data,
                             loading=True,
                         ),
@@ -143,7 +143,7 @@ async def index():
                     Div(Span("↕"), cls="grid-cell-arrow"),
                     # Backend
                     Div(
-                        await backend_state(
+                        await backend_status(
                             org_data=sentry_api.org_data,
                             loading=True,
                         ),
@@ -155,14 +155,14 @@ async def index():
                     Div(Span("↕"), cls="grid-cell-arrow"),
                     # Caches
                     Div(
-                        await caches_state(
+                        await caches_status(
                             org_data=sentry_api.org_data,
                             loading=True,
                         ),
                     ),
                     # Queues
                     Div(
-                        await queues_state(
+                        await queues_status(
                             org_data=sentry_api.org_data,
                             loading=True,
                         ),
@@ -174,7 +174,7 @@ async def index():
                 Div(
                     # Database
                     Div(
-                        await database_state(
+                        await database_status(
                             org_data=sentry_api.org_data,
                             loading=True,
                         ),
