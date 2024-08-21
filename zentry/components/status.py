@@ -19,7 +19,7 @@ async def frontend_status(org_data=None, loading=False):
         ),
     )
 
-    # If desired render loading state
+    # If desired, render loading state
     if loading:
         return loading_placeholder(header, "/status/frontend")
 
@@ -85,7 +85,7 @@ async def backend_status(org_data=None, loading=False):
         ),
     )
 
-    # If desired render loading state
+    # If desired, render loading state
     if loading:
         return loading_placeholder(header, "/status/backend")
 
@@ -149,7 +149,7 @@ async def requests_status(title, id, org_data=None, loading=False):
     else:
         route = "/status/backend_requests"
 
-    # If desired render loading state
+    # If desired, render loading state
     if loading:
         return loading_placeholder(header, route)
 
@@ -250,7 +250,7 @@ async def caches_status(org_data=None, loading=False):
         ),
     )
 
-    # If desired render loading state
+    # If desired, render loading state
     if loading:
         return loading_placeholder(header, "/status/caches")
 
@@ -296,7 +296,7 @@ async def queues_status(org_data=None, loading=False):
         ),
     )
 
-    # If desired render loading state
+    # If desired, render loading state
     if loading:
         return loading_placeholder(header, "/status/queues")
 
