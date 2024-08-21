@@ -52,6 +52,7 @@ def metric(title, id, value, value_prev, score, formatter=lambda x: x):
         Div(formatter(value), cls="value"),
         Div(
             fmt_percentage_signed(change),
+            title="Change compared to the last time period",
             cls=f'change {"up" if change >=0 else "down"}',
         ),
         Div(score, cls=f"score {score.lower()}"),

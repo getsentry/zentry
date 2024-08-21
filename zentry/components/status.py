@@ -15,6 +15,7 @@ async def frontend_status(org_data=None, loading=False):
         A(
             "⌕",
             href=f'{org_data["frontend_url"]}/insights/browser/pageloads/?project={org_data["frontend_id"]}',
+            title="Dig deeper into the data",
             target="_blank",
         ),
     )
@@ -81,6 +82,7 @@ async def backend_status(org_data=None, loading=False):
         A(
             "⌕",
             href=f'{org_data["backend_url"]}/performance/?project={org_data["backend_id"]}',
+            title="Dig deeper into the data",
             target="_blank",
         ),
     )
@@ -139,6 +141,7 @@ async def requests_status(title, id, org_data=None, loading=False):
         A(
             "⌕",
             href=f'{org_data["url"]}/insights/http/?project={org_data["id"]}',
+            title="Dig deeper into the data",
             target="_blank",
         ),
     )
@@ -246,6 +249,7 @@ async def caches_status(org_data=None, loading=False):
         A(
             "⌕",
             href=f'{org_data["backend_url"]}/insights/caches/?project={org_data["backend_id"]}',
+            title="Dig deeper into the data",
             target="_blank",
         ),
     )
@@ -292,6 +296,7 @@ async def queues_status(org_data=None, loading=False):
         A(
             "⌕",
             href=f'{org_data["backend_url"]}/insights/queues/?project={org_data["backend_id"]}',
+            title="Dig deeper into the data",
             target="_blank",
         ),
     )
@@ -359,6 +364,7 @@ async def database_status(org_data=None, loading=False):
         A(
             "⌕",
             href=f'{org_data["backend_url"]}/insights/database/?project={org_data["backend_id"]}',
+            title="Dig deeper into the data",
             target="_blank",
         ),
     )
