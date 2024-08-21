@@ -27,9 +27,23 @@ def no_data(header):
     return Div(
         header,
         Div(
-            Div("No data available", cls="no-data-msg"),
+            Div("No data available.", cls="no-data-msg"),
             cls="body",
         ),
+        cls="card",
+    )
+
+
+def loading_placeholder(header, route):
+    return Div(
+        header,
+        Div(
+            Div("One moment please, loading data...", cls="loading-msg"),
+            cls="body",
+        ),
+        hx_get=route,
+        hx_trigger="load",
+        hx_swap="outerHTML",
         cls="card",
     )
 
@@ -91,17 +105,7 @@ async def frontend_state(org_data=None, loading=False):
 
     # If desired render loading state
     if loading:
-        return Div(
-            header,
-            Div(
-                P("One moment please, loading data..."),
-                cls="body",
-            ),
-            hx_get="/frontend_state",
-            hx_trigger="load",
-            hx_swap="outerHTML",
-            cls="card",
-        )
+        return loading_placeholder(header, "/frontend_state")
 
     # Load data
     data = await sentry_api.get_frontend_state(
@@ -167,17 +171,7 @@ async def backend_state(org_data=None, loading=False):
 
     # If desired render loading state
     if loading:
-        return Div(
-            header,
-            Div(
-                P("One moment please, loading data..."),
-                cls="body",
-            ),
-            hx_get="/backend_state",
-            hx_trigger="load",
-            hx_swap="outerHTML",
-            cls="card",
-        )
+        return loading_placeholder(header, "/backend_state")
 
     # Load data
     data = await sentry_api.get_backend_state(
@@ -241,17 +235,7 @@ async def requests_state(title, id, org_data=None, loading=False):
 
     # If desired render loading state
     if loading:
-        return Div(
-            header,
-            Div(
-                P("One moment please, loading data..."),
-                cls="body",
-            ),
-            hx_get=route,
-            hx_trigger="load",
-            hx_swap="outerHTML",
-            cls="card",
-        )
+        return loading_placeholder(header, route)
 
     # Load data
     if is_frontend:
@@ -352,17 +336,7 @@ async def caches_state(org_data=None, loading=False):
 
     # If desired render loading state
     if loading:
-        return Div(
-            header,
-            Div(
-                P("One moment please, loading data..."),
-                cls="body",
-            ),
-            hx_get="/caches_state",
-            hx_trigger="load",
-            hx_swap="outerHTML",
-            cls="card",
-        )
+        return loading_placeholder(header, "/caches_state")
 
     # Load data
     data = await sentry_api.get_caches_state(
@@ -408,17 +382,7 @@ async def queues_state(org_data=None, loading=False):
 
     # If desired render loading state
     if loading:
-        return Div(
-            header,
-            Div(
-                P("One moment please, loading data..."),
-                cls="body",
-            ),
-            hx_get="/queues_state",
-            hx_trigger="load",
-            hx_swap="outerHTML",
-            cls="card",
-        )
+        return loading_placeholder(header, "/queues_state")
 
     # Load data
     data = await sentry_api.get_queues_state(
@@ -484,17 +448,7 @@ async def database_state(org_data=None, loading=False):
     )
 
     if loading:
-        return Div(
-            header,
-            Div(
-                P("One moment please, loading data..."),
-                cls="body",
-            ),
-            hx_get="/database_state",
-            hx_trigger="load",
-            hx_swap="outerHTML",
-            cls="card",
-        )
+        return loading_placeholder(header, "/database_state")
 
     # Load data
     data = await sentry_api.get_database_state(

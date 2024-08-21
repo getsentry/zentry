@@ -165,7 +165,8 @@ h1 {
   justify-content: space-evenly;
 }
 
-.card .body .no-data-msg {
+.card .body .no-data-msg, 
+.card .body .loading-msg {
   margin-top: 4em;
 }
 
