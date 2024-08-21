@@ -23,6 +23,17 @@ SQL_KEYWORDS = [
 ]
 
 
+def no_data(header):
+    return Div(
+        header,
+        Div(
+            Div("No data available", cls="no-data-msg"),
+            cls="body",
+        ),
+        cls="card",
+    )
+
+
 def metric(title, id, value, value_prev, score, formatter=lambda x: x):
     """
     The card representing one metric.
@@ -107,14 +118,7 @@ async def frontend_state(org_data=None, loading=False):
 
     # If no data, render no data state
     if not data:
-        return Div(
-            header,
-            Div(
-                P("No data available"),
-                cls="body",
-            ),
-            cls="card",
-        )
+        return no_data(header)
 
     # Render the frontend state
     return Div(
@@ -190,14 +194,7 @@ async def backend_state(org_data=None, loading=False):
 
     # If no data, render no data state
     if not data:
-        return Div(
-            header,
-            Div(
-                P("No data available"),
-                cls="body",
-            ),
-            cls="card",
-        )
+        return no_data(header)
 
     # Render the backend state
     return Div(
@@ -284,14 +281,7 @@ async def requests_state(title, id, org_data=None, loading=False):
 
     # If no data, render no data state
     if not data:
-        return Div(
-            header,
-            Div(
-                P("No data available"),
-                cls="body",
-            ),
-            cls="card",
-        )
+        return no_data(header)
 
     # Render the requests state
     failure_rate = (
@@ -389,14 +379,7 @@ async def caches_state(org_data=None, loading=False):
 
     # If no data, render no data state
     if not data:
-        return Div(
-            header,
-            Div(
-                P("No data available"),
-                cls="body",
-            ),
-            cls="card",
-        )
+        return no_data(header)
 
     # Render the caches state
     return Div(
@@ -452,14 +435,7 @@ async def queues_state(org_data=None, loading=False):
 
     # If no data, render no data state
     if not data:
-        return Div(
-            header,
-            Div(
-                P("No data available"),
-                cls="body",
-            ),
-            cls="card",
-        )
+        return no_data(header)
 
     # Render the queues state
     return Div(
@@ -529,14 +505,7 @@ async def database_state(org_data=None, loading=False):
 
     # If no data, render no data state
     if len(data) == 0:
-        return Div(
-            header,
-            Div(
-                P("No data available"),
-                cls="body",
-            ),
-            cls="card",
-        )
+        return no_data(header)
 
     # Render the database state
     output = []
