@@ -217,8 +217,7 @@ h1 {
 }
 .metric .score {
   margin: 0;
-  padding: 0;
-  height: 2em;
+  padding: 0.1em;
   font-weight: 600;
   border-top-color: rgb(224, 220, 229);
   border-top-style: solid;

@@ -1,5 +1,4 @@
 import os
-from aiohttp_client_cache import CachedSession
 from fasthtml.common import *
 import sentry_api
 import sentry_sdk
@@ -14,6 +13,7 @@ from components import (
     frontend_status,
     queues_status,
 )
+from routes.status import status_app
 
 sentry_sdk.init(
     dsn=os.environ.get("SENTRY_DSN"),
@@ -32,60 +32,14 @@ headers = (
     ),
 )
 
+routes = [Mount("/status", status_app, name="status")]
+
 
 app, rt = fast_app(
     pico=False,
     hdrs=headers,
+    routes=routes,
 )
-
-
-@app.get("/status/frontend_requests")
-async def get_frontend_requests_status():
-    return await frontend_requests_status(
-        org_data=sentry_api.org_data,
-    )
-
-
-@app.get("/status/backend_requests")
-async def get_backend_requests_status():
-    return await backend_requests_status(
-        org_data=sentry_api.org_data,
-    )
-
-
-@app.get("/status/frontend")
-async def get_frontend_status():
-    return await frontend_status(
-        org_data=sentry_api.org_data,
-    )
-
-
-@app.get("/status/backend")
-async def get_backend_status():
-    return await backend_status(
-        org_data=sentry_api.org_data,
-    )
-
-
-@app.get("/status/caches")
-async def get_caches_status():
-    return await caches_status(
-        org_data=sentry_api.org_data,
-    )
-
-
-@app.get("/status/queues")
-async def get_queues_status():
-    return await queues_status(
-        org_data=sentry_api.org_data,
-    )
-
-
-@app.get("/status/database")
-async def get_database_status():
-    return await database_status(
-        org_data=sentry_api.org_data,
-    )
 
 
 @app.get("/")
