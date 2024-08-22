@@ -102,8 +102,22 @@ def footer():
             A("Anton Pirker", href="https://github.com/antonpirker", target="_blank"),
             " during Sentry Hackweek 2024. ",
             A(
-                "Source code",
+                "Source code.",
                 href="https://github.com/getsentry/zentry",
+                target="_blank",
+            ),
+        ),
+        P(
+            "Zentry Logo Vectors by ",
+            A(
+                "Md. Enamul Haque Mukul (Vecteezy)",
+                href="https://www.vecteezy.com/vector-art/32180863-enso-zen-stroke-colorful-circle-japanese-brush-symbol-vector-illustration",
+                target="_blank",
+            ),
+            ". Background Image by ",
+            A(
+                "Sarah Dorweiler (Unsplash)",
+                href="https://unsplash.com/photos/green-leafed-plant-on-clear-glass-vase-filled-with-water-x2Tmfd1-SgA",
                 target="_blank",
             ),
             style="margin-bottom: 2em;",
