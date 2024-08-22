@@ -91,7 +91,7 @@ def header():
     return Div(
         Img(src="/assets/img/zentry-logo.svg", alt="Zentry logo", cls="logo"),
         Div("Zentry", cls="title"),
-        cls="header",
+        cls="page-header",
     )
 
 
