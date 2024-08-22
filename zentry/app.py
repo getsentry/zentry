@@ -11,6 +11,7 @@ from components import (
     footer,
     frontend_requests_status,
     frontend_status,
+    header,
     queues_status,
 )
 from routes.status import status_app
@@ -56,6 +57,7 @@ async def index():
         )
 
     return Title("Zentry"), Div(
+        header(),
         Div(
             H1(sentry_api.org_data["name"]),
             tagline,

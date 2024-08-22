@@ -87,6 +87,14 @@ def query(query, id, cls="row query"):
     )
 
 
+def header():
+    return Div(
+        Img(src="/assets/img/zentry-logo.svg", alt="Zentry logo", cls="logo"),
+        Div("Zentry", cls="title"),
+        cls="header",
+    )
+
+
 def footer():
     return Div(
         P(
